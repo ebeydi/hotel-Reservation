@@ -6,18 +6,22 @@ public class Users {
     private String motDePasse;
     private String nom;
     private String prenom;
+    private String telephone;
+    private String adresse;
     private String email;
     private UsersRole role;
 
     public Users() {}
 
     public Users(String id, String login, String motDePasse, String nom,
-                 String prenom, String email, UsersRole role) {
+                 String prenom, String telephone, String adresse, String email, UsersRole role) {
         this.id = id;
         this.login = login;
         this.motDePasse = motDePasse;
         this.nom = nom;
         this.prenom = prenom;
+        this.telephone = telephone;
+        this.adresse = adresse;
         this.email = email;
         this.role = role;
     }
