@@ -1,5 +1,6 @@
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\AppLauncher.java
-C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\LoginController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\AuthController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\HomeClientController.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\dao\USERDAO.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\database\connexionDB.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\Main.java
@@ -14,5 +15,6 @@ C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\StatutReservation.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\TypeChambre.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Users.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\UserSession.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\UsersRole.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\module-info.java

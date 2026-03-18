@@ -2,6 +2,8 @@ package com.hotel.model;
 
 public class Receptionniste extends Users {
 
-    public Receptionniste() {}
+    public Receptionniste() {
+        super();
+    }
 
 }

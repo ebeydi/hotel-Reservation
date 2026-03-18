@@ -8,7 +8,7 @@ public class Main extends Application {
 
     @Override
     public void start(@SuppressWarnings("exports") Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/Auth.fxml"));
         primaryStage.setScene(new Scene(loader.load()));
         primaryStage.setTitle("Login");
         primaryStage.show();
