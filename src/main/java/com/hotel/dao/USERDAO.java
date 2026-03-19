@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import com.hotel.database.connexionDB;
 import com.hotel.model.Users;
@@ -11,10 +13,9 @@ import com.hotel.model.UsersRole;
 
 public class USERDAO {
 
-    // --- MÉTHODE LOGIN (Celle qui manquait ou était mal définie) ---
+    // --- MÉTHODE LOGIN ---
     public Users login(String email, String password) {
         Users user = null;
-        // Rappel : Dans ton tableau SQL, la colonne s'appelle 'motDePasse'
         String sql = "SELECT * FROM users WHERE email=? AND motDePasse=?";
 
         try (Connection conn = connexionDB.getConnection();
@@ -25,27 +26,31 @@ public class USERDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    user = new Users();
-                    user.setId(rs.getString("id"));
-                    user.setNom(rs.getString("nom"));
-                    user.setPrenom(rs.getString("prenom"));
-                    user.setEmail(rs.getString("email"));
-                    user.setPassword(rs.getString("motDePasse"));
-                    user.setTelephone(rs.getString("telephone"));
-                    user.setAdresse(rs.getString("adresse"));
-                    user.setNationalite(rs.getString("nationalite"));
-                    
-                    // Conversion du String de la BD vers l'Enum Java
-                    String roleBD = rs.getString("role");
-                    if (roleBD != null) {
-                        user.setRole(UsersRole.valueOf(roleBD.toUpperCase()));
-                    }
+                    user = mapResultSetToUser(rs);
                 }
             }
         } catch (SQLException e) {
             System.err.println("❌ Erreur lors du login : " + e.getMessage());
         }
         return user;
+    }
+
+    // --- MÉTHODE POUR RÉCUPÉRER TOUS LES RÉCEPTIONNISTES ---
+    public List<Users> getAllReceptionnists() {
+        List<Users> list = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE role = 'RECEPTIONNISTE'";
+
+        try (Connection conn = connexionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de la récupération du personnel : " + e.getMessage());
+        }
+        return list;
     }
 
     // --- MÉTHODE SAVE ---
@@ -55,11 +60,14 @@ public class USERDAO {
         try (Connection conn = connexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            String uniqueID = UUID.randomUUID().toString().substring(0, 8); 
+            // Si l'utilisateur n'a pas d'ID, on en génère un
+            String finalID = (user.getId() == null || user.getId().isEmpty()) 
+                             ? UUID.randomUUID().toString().substring(0, 8) 
+                             : user.getId();
 
-            ps.setString(1, uniqueID);
-            ps.setString(2, user.getEmail()); // login
-            ps.setString(3, user.getPassword()); // motDePasse
+            ps.setString(1, finalID);
+            ps.setString(2, user.getEmail()); 
+            ps.setString(3, user.getPassword()); 
             ps.setString(4, user.getNom());
             ps.setString(5, user.getPrenom());
             ps.setString(6, user.getTelephone());
@@ -74,5 +82,24 @@ public class USERDAO {
             System.err.println("❌ Erreur lors de l'enregistrement : " + e.getMessage());
             return false;
         }
+    }
+
+    // --- MÉTHODE PRIVÉE POUR ÉVITER LA RÉPÉTITION DE CODE (DRY) ---
+    private Users mapResultSetToUser(ResultSet rs) throws SQLException {
+        Users user = new Users();
+        user.setId(rs.getString("id"));
+        user.setNom(rs.getString("nom"));
+        user.setPrenom(rs.getString("prenom"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("motDePasse"));
+        user.setTelephone(rs.getString("telephone"));
+        user.setAdresse(rs.getString("adresse"));
+        user.setNationalite(rs.getString("nationalite"));
+        
+        String roleBD = rs.getString("role");
+        if (roleBD != null) {
+            user.setRole(UsersRole.valueOf(roleBD.toUpperCase()));
+        }
+        return user;
     }
 }

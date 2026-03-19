@@ -7,6 +7,7 @@ import com.hotel.model.UsersRole;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,17 +31,15 @@ public class AuthController {
             return;
         }
 
-        // 1. On vérifie en base de données
         USERDAO dao = new USERDAO();
         Users user = dao.login(email, pass);
 
         if (user != null) {
-            // 2. On stocke l'utilisateur dans la session
             UserSession.setInstance(user);
-            System.out.println("✅ Connexion réussie : " + user.getNom());
+            System.out.println("✅ Connexion réussie : " + user.getNom() + " | Rôle : " + user.getRole());
             
-            // 3. Direction l'accueil !
-            navigateToHome();
+            // On appelle la nouvelle méthode de navigation intelligente
+            navigateToDashboard(user.getRole());
         } else {
             showError("❌ Email ou mot de passe incorrect");
         }
@@ -58,7 +57,7 @@ public class AuthController {
             nomRegister.getText(), prenomRegister.getText(), 
             phoneRegister.getText(), adresseRegister.getText(), 
             emailRegister.getText(), nationaliteRegister.getText(), 
-            UsersRole.CLIENT
+            UsersRole.CLIENT // Inscription par défaut en tant que CLIENT
         );
 
         if (USERDAO.save(newUser)) {
@@ -70,17 +69,29 @@ public class AuthController {
         }
     }
 
-    private void navigateToHome() {
+    // --- LA MÉTHODE QUI GÈRE LA REDIRECTION SELON LE RÔLE ---
+    private void navigateToDashboard(UsersRole role) {
         try {
+            String fxmlFile = "";
+            
+            // Sélection du fichier selon le rôle
+            if (role == UsersRole.ADMIN) {
+                fxmlFile = "/com/hotel/home_admin.fxml";
+            } else {
+                fxmlFile = "/com/hotel/home_client.fxml";
+            }
+
             Stage stage = (Stage) emailLogin.getScene().getWindow();
-            // Assure-tu que le nom du fichier est exact
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/home_client.fxml"));
-            Scene scene = new Scene(loader.load());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.centerOnScreen();
+            
         } catch (IOException e) {
             e.printStackTrace();
-            showError("❌ Erreur de chargement de la page d'accueil");
+            showError("❌ Erreur de chargement de l'interface : " + role);
         }
     }
 

@@ -1,6 +1,14 @@
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\AppLauncher.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\AddStaffController.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\AuthController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\HomeAdminController.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\HomeClientController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\HotelProfilController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\ManageRoomController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\controller\ManageStaffController.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\dao\CHAMBREDAO.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\dao\HOTELDAO.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\dao\TYPECHAMBREDAO.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\dao\USERDAO.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\database\connexionDB.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\Main.java
@@ -9,6 +17,7 @@ C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Client.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\EtatChambre.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Hotel.java
+C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\HotelSession.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Receptionniste.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Reservation.java
 C:\Users\Ebeydi\OneDrive\Desktop\projetJAVA\Java_Projet\hotel\src\main\java\com\hotel\model\Statut.java

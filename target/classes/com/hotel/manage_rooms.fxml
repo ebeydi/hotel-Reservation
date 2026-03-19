@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hotel.controller.ManageRoomController">
+   <children>
+      <Label text="🏨 CONFIGURATION DES CHAMBRES" textFill="#2c3e50">
+         <font><Font name="System Bold" size="24.0" /></font>
+      </Label>
+
+      <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;">
+         <children>
+            <TextField fx:id="txtNumero" promptText="N° Chambre (ex: 101)" prefWidth="150.0" />
+            <ComboBox fx:id="comboType" prefWidth="150.0" promptText="Type" />
+            <ComboBox fx:id="comboEtat" prefWidth="150.0" promptText="État Initial" />
+            <Button onAction="#handleAddRoom" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Ajouter la Chambre" />
+         </children>
+      </HBox>
+
+      <TableView fx:id="roomTable" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="colNumero" prefWidth="150.0" text="Numéro" />
+          <TableColumn fx:id="colType" prefWidth="200.0" text="Type de Chambre" />
+          <TableColumn fx:id="colEtat" prefWidth="200.0" text="État Actuel" />
+        </columns>
+      </TableView>
+   </children>
+   <padding>
+      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+   </padding>
+</VBox>
