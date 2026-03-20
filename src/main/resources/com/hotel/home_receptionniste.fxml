@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.hotel.controller.HomeReceptionnisteController">
+
+    <!-- Sidebar gauche -->
+    <left>
+        <VBox prefWidth="240.0" spacing="15.0" style="-fx-background-color: #2c3e50;">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+            <children>
+                <Label text="LA PETITE CÔTE" textFill="#e67e22">
+                    <font>
+                        <Font name="System Bold" size="20.0"/>
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="30.0" top="10.0"/>
+                    </VBox.margin>
+                </Label>
+
+                <Button alignment="BASELINE_LEFT"
+                        maxWidth="Infinity"
+                        prefHeight="45.0"
+                        style="-fx-background-color: #34495e; -fx-text-fill: white;"
+                        text="🏠   Accueil"/>
+
+                <Button alignment="BASELINE_LEFT"
+                        maxWidth="Infinity"
+                        prefHeight="45.0"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1;"
+                        text="🏨   Passer une réservation"
+                        onAction="#handlePasserReservation"/>
+
+                <Button alignment="BASELINE_LEFT"
+                        maxWidth="Infinity"
+                        prefHeight="45.0"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1;"
+                        text="📅   Check-in"
+                        onAction="#handleCheckIn"/>
+
+                <Button alignment="BASELINE_LEFT"
+                        maxWidth="Infinity"
+                        prefHeight="45.0"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1;"
+                        text="📅   Check-out"
+                        onAction="#handleCheckOut"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Button onAction="#handleLogout"
+                        alignment="BASELINE_LEFT"
+                        maxWidth="Infinity"
+                        prefHeight="45.0"
+                        style="-fx-background-color: transparent; -fx-text-fill: #e74c3c;"
+                        text="🚪   Déconnexion"/>
+            </children>
+        </VBox>
+    </left>
+
+    <!-- Centre : cartes + liste des réservations -->
+    <center>
+    <VBox spacing="20.0" alignment="TOP_LEFT">
+        <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+        </padding>
+        <children>
+
+            <!-- Bloc bienvenue -->
+            <VBox spacing="5.0">
+                <children>
+                    <Label fx:id="lblWelcome" text="Bienvenue !" textFill="#2c3e50">
+                        <font>
+                            <Font name="System Bold" size="32.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="lblEmail"
+                           text="receptionniste@email.com"
+                           textFill="#7f8c8d"/>
+                </children>
+            </VBox>
+
+            <!-- Cartes sous le bienvenue -->
+            <HBox spacing="10.0">
+                <children>
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                          prefWidth="180" prefHeight="80" alignment="CENTER">
+                        <children>
+                            <Label text="Réservations du jour"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblNbReservationsJour" text="0"/>
+                        </children>
+                    </VBox>
+
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                          prefWidth="180" prefHeight="80" alignment="CENTER">
+                        <children>
+                            <Label text="Clients en check-in"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblNbCheckIn" text="0"/>
+                        </children>
+                    </VBox>
+
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                          prefWidth="180" prefHeight="80" alignment="CENTER">
+                        <children>
+                            <Label text="Clients en check-out"
+                                   style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblNbCheckOut" text="0"/>
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <!-- Titre + TableView restent en dessous -->
+            <Label text="Liste des réservations"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;"/>
+
+            <TableView fx:id="tableReservations" prefHeight="350.0" prefWidth="750.0">
+                <columns>
+                    <TableColumn fx:id="colNumeroReservation" text="N° Réservation" prefWidth="120.0"/>
+                    <TableColumn fx:id="colNomClient" text="Client" prefWidth="140.0"/>
+                    <TableColumn fx:id="colHotel" text="Hôtel" prefWidth="140.0"/>
+                    <TableColumn fx:id="colChambre" text="Chambre" prefWidth="100.0"/>
+                    <TableColumn fx:id="colDateArrivee" text="Date arrivée" prefWidth="110.0"/>
+                    <TableColumn fx:id="colDateDepart" text="Date départ" prefWidth="110.0"/>
+                    <TableColumn fx:id="colStatut" text="Statut" prefWidth="100.0"/>
+                </columns>
+            </TableView>
+
+        </children>
+    </VBox>
+</center>
+
+
+    <!-- Pied de page -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #ECF0F1;">
+            <padding>
+                <Insets top="5" right="15" bottom="5" left="15"/>
+            </padding>
+            <children>
+                <Label text="Connecté en tant que réceptionniste"
+                       style="-fx-text-fill: #7F8C8D;"/>
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

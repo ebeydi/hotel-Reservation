@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.hotel.controller.ReservationFormController"
+      spacing="10.0">
+      <padding>
+        <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+    </padding>
+
+    <children>
+
+        <Label text="Nouvelle réservation">
+            <font>
+                <Font name="System Bold" size="18.0"/>
+            </font>
+        </Label>
+
+        <!-- Nom client -->
+        <Label text="Nom du client"/>
+        <TextField fx:id="txtNomClient" promptText="Nom complet du client"/>
+
+        <!-- Chambre -->
+        <Label text="Chambre"/>
+        <TextField fx:id="txtChambre" promptText="Numéro ou code de la chambre"/>
+
+        <!-- Nombre de personnes -->
+        <Label text="Nombre de personnes"/>
+        <TextField fx:id="txtNbPersonnes" promptText="Ex : 2"/>
+
+        <!-- Montant total -->
+        <Label text="Montant total"/>
+        <TextField fx:id="txtMontantTotal" promptText="Ex : 75000"/>
+
+        <!-- Dates -->
+        <Label text="Date d'arrivée"/>
+        <DatePicker fx:id="dpArrivee"/>
+
+        <Label text="Date de départ"/>
+        <DatePicker fx:id="dpDepart"/>
+
+        <!-- Boutons -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <children>
+                <Button text="Enregistrer" onAction="#handleEnregistrer"/>
+                <Button text="Annuler" onAction="#handleAnnuler"/>
+            </children>
+        </HBox>
+
+    </children>
+</VBox>
