@@ -4,6 +4,7 @@ com\hotel\model\Users.class
 com\hotel\controller\ManageStaffController.class
 com\hotel\model\EtatChambre.class
 com\hotel\model\UsersRole.class
+com\hotel\dao\ClientDAO.class
 com\hotel\Main.class
 com\hotel\model\Statut.class
 com\hotel\dao\USERDAO.class
@@ -11,7 +12,9 @@ com\hotel\controller\HomeClientController.class
 com\hotel\model\Client.class
 module-info.class
 com\hotel\controller\HomeAdminController.class
+com\hotel\controller\HomeReceptionnisteController.class
 com\hotel\model\Hotel.class
+com\hotel\dao\RESERVATIONDAO.class
 com\hotel\dao\CHAMBREDAO.class
 com\hotel\model\Administrateur.class
 com\hotel\model\Receptionniste.class
@@ -20,8 +23,10 @@ com\hotel\model\StatutReservation.class
 com\hotel\model\HotelSession.class
 com\hotel\dao\HOTELDAO.class
 com\hotel\AppLauncher.class
+com\hotel\controller\AuthController$1.class
 com\hotel\database\connexionDB.class
 com\hotel\model\Chambre.class
+com\hotel\controller\ReservationFormController.class
 com\hotel\model\TypeChambre.class
 com\hotel\controller\HotelProfilController.class
 com\hotel\controller\ManageRoomController.class

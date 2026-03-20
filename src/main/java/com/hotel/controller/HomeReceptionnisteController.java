@@ -1,307 +1,133 @@
 package com.hotel.controller;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import com.hotel.dao.ReservationDAO;
-import com.hotel.model.Chambre;
-import com.hotel.model.Client;
+import com.hotel.dao.RESERVATIONDAO;
 import com.hotel.model.Reservation;
-import com.hotel.model.StatutReservation;
-import com.hotel.model.UserSession;
-import com.hotel.model.Users;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
+
+import java.util.Optional;
 
 public class HomeReceptionnisteController {
 
-    @FXML
-    private Label lblNbReservationsJour;
+    @FXML private StackPane contentArea;
+    private final RESERVATIONDAO reservationDAO = new RESERVATIONDAO();
 
-    @FXML
-    private Label lblNbCheckIn;
-
-    @FXML
-    private Label lblNbCheckOut;
-
-    @FXML
-    private Label lblWelcome;
-
-    @FXML
-    private Label lblEmail;
-
-    @FXML
-    private TableView<Reservation> tableReservations;
-
-    @FXML
-    private TableColumn<Reservation, String> colNumeroReservation;
-
-    @FXML
-    private TableColumn<Reservation, String> colNomClient;
-
-    @FXML
-    private TableColumn<Reservation, String> colHotel;
-
-    @FXML
-    private TableColumn<Reservation, String> colChambre;
-
-    @FXML
-    private TableColumn<Reservation, String> colDateArrivee;
-
-    @FXML
-    private TableColumn<Reservation, String> colDateDepart;
-
-    @FXML
-    private TableColumn<Reservation, String> colStatut;
-
-    private final ObservableList<Reservation> reservations = FXCollections.observableArrayList();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    private final ReservationDAO reservationDAO = new ReservationDAO();
-
-    /**
-     * Méthode appelée automatiquement quand le FXML est chargé.
-     */
     @FXML
     public void initialize() {
-        // Infos du réceptionniste connecté
-        Users currentUser = UserSession.getInstance();
-
-        if (currentUser != null) {
-            lblWelcome.setText("Bienvenue, " + currentUser.getPrenom() + " !");
-            lblEmail.setText(currentUser.getEmail());
-        } else {
-            lblWelcome.setText("Bienvenue, réceptionniste !");
-        }
-
-        // Configuration des colonnes du TableView
-        configureTableColumns();
-
-        // Lier la liste à la TableView
-        tableReservations.setItems(reservations);
-
-        // Charger les réservations depuis la BD
-        loadReservations();
+        // Lancement du dashboard après que tout soit chargé
+        Platform.runLater(() -> handleAccueil(null));
     }
 
-    /**
-     * Configuration des colonnes du TableView.
-     */
-    private void configureTableColumns() {
-        colNumeroReservation.setCellValueFactory(
-                data -> new SimpleStringProperty(data.getValue().getNumReservation())
-        );
-
-        colNomClient.setCellValueFactory(
-                data -> {
-                    Client c = data.getValue().getClient();
-                    String nom = (c != null) ? c.getNom() + " " + c.getPrenom() : "";
-                    return new SimpleStringProperty(nom);
-                }
-        );
-
-        colHotel.setCellValueFactory(
-                data -> {
-                    Chambre ch = data.getValue().getChambre();
-                    String hotelNom = "";
-                    if (ch != null && ch.getHotel() != null) {
-                        hotelNom = ch.getHotel().getNom();
-                    }
-                    return new SimpleStringProperty(hotelNom);
-                }
-        );
-
-        colChambre.setCellValueFactory(
-                data -> {
-                    Chambre ch = data.getValue().getChambre();
-                    String numero = (ch != null) ? ch.getNumero() : "";
-                    return new SimpleStringProperty(numero);
-                }
-        );
-
-        colDateArrivee.setCellValueFactory(
-                data -> new SimpleStringProperty(formatDate(data.getValue().getDateArrive()))
-        );
-
-        colDateDepart.setCellValueFactory(
-                data -> new SimpleStringProperty(formatDate(data.getValue().getDateDepart()))
-        );
-
-        colStatut.setCellValueFactory(
-                data -> {
-                    StatutReservation s = data.getValue().getStatut();
-                    String txt = (s != null) ? s.name() : "";
-                    return new SimpleStringProperty(txt);
-                }
-        );
-    }
-
-    /**
-     * Charger les réservations depuis la base et rafraîchir la TableView + stats.
-     */
-    private void loadReservations() {
+    /** Charge une vue FXML dans le contentArea */
+    private void loadView(String fxmlPath) {
         try {
-            List<Reservation> list = reservationDAO.findAll(); // ou findForToday()
-            reservations.setAll(list);
-            tableReservations.refresh();
-
-            // Mise à jour des cartes
-            lblNbReservationsJour.setText(String.valueOf(list.size()));
-
-            long nbCheckIn = list.stream()
-                    .filter(r -> r.getStatut() == StatutReservation.OCCUPEE)
-                    .count();
-            lblNbCheckIn.setText(String.valueOf(nbCheckIn));
-
-            long nbCheckOut = list.stream()
-                    .filter(r -> r.getStatut() == StatutReservation.ANNULEE) // à adapter si tu as un statut TERMINEE
-                    .count();
-            lblNbCheckOut.setText(String.valueOf(nbCheckOut));
-
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+            contentArea.getChildren().setAll(view);
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Erreur", "Impossible de charger les réservations : " + e.getMessage());
+            showError("Erreur chargement", "Impossible de charger : " + fxmlPath + "\n" + e.getMessage());
         }
     }
 
-    private String formatDate(Date d) {
-        return (d != null) ? dateFormat.format(d) : "";
+    /** Tableau de bord */
+    @FXML
+    public void handleAccueil(ActionEvent event) {
+        loadView("/com/hotel/dashboardRecep.fxml");
     }
 
-    /**
-     * Passer une réservation : afficher le formulaire à la place de la liste.
-     */
+    /** Nouvelle réservation */
     @FXML
     public void handlePasserReservation(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/reservation_form.fxml"));
-            Parent formRoot = loader.load();
-
-            // Récupérer le BorderPane racine de la scène actuelle
-            Stage stage = (Stage) lblWelcome.getScene().getWindow();
-            Scene scene = stage.getScene();
-            BorderPane root = (BorderPane) scene.getRoot();
-
-            // Mettre le formulaire au centre à la place du TableView
-            root.setCenter(formRoot);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Impossible d'afficher le formulaire de réservation : " + e.getMessage());
-        }
+        loadView("/com/hotel/reservation_form.fxml");
     }
 
-    /**
-     * Check-in : changer le statut d'une réservation CONFIRMEE en OCCUPEE.
-     */
+    /** Check-In client */
     @FXML
     public void handleCheckIn(ActionEvent event) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Check-in");
-        dialog.setHeaderText("Check-in d'une réservation");
-        dialog.setContentText("Numéro de réservation :");
+        System.out.println("CLICK CHECK-IN"); // Debug
+        Optional<String> result = showInputDialog("Check-In", "Enregistrement Arrivée", "Entrez le numéro de réservation :");
 
-        dialog.showAndWait().ifPresent(numReservation -> {
-            if (numReservation.trim().isEmpty()) {
-                showError("Erreur", "Le numéro de réservation est obligatoire.");
-                return;
-            }
-
+        result.ifPresent(numRes -> {
+            System.out.println("Numéro réservation : " + numRes); // Debug
             try {
-                boolean ok = reservationDAO.checkInReservation(numReservation.trim());
-
+                boolean ok = reservationDAO.checkIn(numRes);
                 if (ok) {
-                    showInfo("Succès", "Le statut de la réservation a été changé en OCCUPEE.\nVous pouvez remettre la clé au client.");
-                    loadReservations(); // rafraîchit la table
+                    showNotify("Succès", "Check-In validé. Le client est maintenant 'En chambre'.");
+                    handleAccueil(null); // Rafraîchit le dashboard
                 } else {
-                    showError("Erreur", "Aucune réservation CONFIRMEE trouvée pour ce numéro.");
+                    showError("Erreur", "Numéro de réservation introuvable ou déjà enregistré.");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Erreur", "Problème lors du check-in : " + e.getMessage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                showError("Erreur SQL", ex.getMessage());
             }
         });
     }
 
-    /**
-     * Check-out : terminer une réservation OCCUPEE et rendre la chambre DISPONIBLE.
-     */
+    /** Check-Out client */
     @FXML
     public void handleCheckOut(ActionEvent event) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Check-out");
-        dialog.setHeaderText("Check-out d'une réservation");
-        dialog.setContentText("Numéro de réservation :");
+        System.out.println("CLICK CHECK-OUT"); // Debug
+        Optional<String> result = showInputDialog("Check-Out", "Validation Départ", "Entrez le numéro de réservation :");
 
-        dialog.showAndWait().ifPresent(numReservation -> {
-            if (numReservation.trim().isEmpty()) {
-                showError("Erreur", "Le numéro de réservation est obligatoire.");
-                return;
-            }
-
+        result.ifPresent(numRes -> {
+            System.out.println("Numéro réservation : " + numRes); // Debug
             try {
-                boolean ok = reservationDAO.checkOutReservation(numReservation.trim());
-
+                boolean ok = reservationDAO.checkOut(numRes);
                 if (ok) {
-                    showInfo("Succès", "Le check-out a été effectué.\nLa chambre est maintenant DISPONIBLE.");
-                    loadReservations(); // rafraîchit la table
+                    showNotify("Succès", "Check-Out validé. La chambre est libérée.");
+                    handleAccueil(null);
                 } else {
-                    showError("Erreur", "Aucune réservation OCCUPEE trouvée pour ce numéro.");
+                    showError("Erreur", "Impossible de faire le Check-Out (vérifiez le numéro ou le statut).");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Erreur", "Problème lors du check-out : " + e.getMessage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                showError("Erreur SQL", ex.getMessage());
             }
         });
     }
+@FXML
+private void handleLogout() {
+    try {
+        // On suppose que tu as auth.fxml dans /com/hotel/
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
+        Parent root = loader.load();
+        javafx.stage.Stage stage = (javafx.stage.Stage) contentArea.getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.centerOnScreen();
+        stage.show();
+    } catch (Exception e) {
+        e.printStackTrace();
+        showError("Erreur Logout", "Impossible de se déconnecter.");
+    }
+}
+    /** Dialog pour entrer un texte (numéro de réservation) */
+    private Optional<String> showInputDialog(String title, String header, String content) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+        return dialog.showAndWait();
+    }
 
+    /** Alert info */
+    private void showNotify(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title); alert.setHeaderText(null); alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /** Alert erreur */
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setTitle(title); alert.setHeaderText(null); alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    private void showInfo(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    /**
-     * Déconnexion : on vide la session et on revient à la page de login.
-     */
-    @FXML
-    private void handleLogout() {
-        try {
-            UserSession.clean();
-
-            Stage stage = (Stage) lblWelcome.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
-            Scene scene = new Scene(loader.load());
-            stage.setScene(scene);
-            stage.centerOnScreen();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

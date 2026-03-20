@@ -70,30 +70,40 @@ public class AuthController {
     }
 
     // --- LA MÉTHODE QUI GÈRE LA REDIRECTION SELON LE RÔLE ---
-    private void navigateToDashboard(UsersRole role) {
-        try {
-            String fxmlFile = "";
-            
-            // Sélection du fichier selon le rôle
-            if (role == UsersRole.ADMIN) {
+   private void navigateToDashboard(UsersRole role) {
+    try {
+        String fxmlFile = "";
+        
+        // --- LOGIQUE DE ROUTAGE AMÉLIORÉE ---
+        switch (role) {
+            case ADMIN:
                 fxmlFile = "/com/hotel/home_admin.fxml";
-            } else {
+                break;
+            case RECEPTIONNISTE:
+                // C'est ici qu'on pointe vers ton nouveau dashboard
+                fxmlFile = "/com/hotel/home_receptionniste.fxml";
+                break;
+            case CLIENT:
+            default:
                 fxmlFile = "/com/hotel/home_client.fxml";
-            }
-
-            Stage stage = (Stage) emailLogin.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            Parent root = loader.load();
-            
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("❌ Erreur de chargement de l'interface : " + role);
+                break;
         }
+
+        System.out.println("🚀 Chargement de l'interface : " + fxmlFile);
+
+        Stage stage = (Stage) emailLogin.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+        Parent root = loader.load();
+        
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.centerOnScreen();
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        showError("❌ Erreur critique : Impossible de charger " + role);
     }
+}
 
     private void showError(String message) {
         lblError.setText(message);

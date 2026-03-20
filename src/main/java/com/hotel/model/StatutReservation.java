@@ -1,8 +1,9 @@
 package com.hotel.model;
 
 public enum StatutReservation {
- CONFIRMEE,
+    EN_ATTENTE,
+    CONFIRMEE,
     OCCUPEE,
-    DISPONIBLE,
+    TERMINEE,  // Remplace avantageusement DISPONIBLE
     ANNULEE
 }
