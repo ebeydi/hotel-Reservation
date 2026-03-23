@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hotel.controller.HomeReceptionnisteController">
+    
+    <left>
+        <VBox prefWidth="250.0" spacing="10.0" style="-fx-background-color: #2c3e50;">
+            <padding>
+                <Insets bottom="20.0" left="15.0" right="15.0" top="30.0" />
+            </padding>
+            <children>
+                <Label text="HÔTEL GESTION" textFill="#e67e22">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="40.0" />
+                    </VBox.margin>
+                </Label>
+                
+                <Button alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleAccueil" prefHeight="45.0" style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand;" text="🏠   Tableau de Bord" />
+                <Button alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handlePasserReservation" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-cursor: hand;" text="📝   Nouvelle Réservation" />
+                <Button alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleCheckIn" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-cursor: hand;" text="🔑   Check-In" />
+                <Button alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleCheckOut" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-cursor: hand;" text="🚪   Check-Out" />
+                
+                <Region VBox.vgrow="ALWAYS" />
+                
+                <Button alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleLogout" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-cursor: hand;" text="🔒   Déconnexion" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0.0" style="-fx-background-color: #f4f7f6;">
+            <children>
+                
+                <HBox alignment="CENTER_LEFT" prefHeight="80.0" style="-fx-background-color: white; -fx-border-color: #dcdde1; -fx-border-width: 0 0 1 0;">
+                    <padding>
+                        <Insets left="30.0" right="30.0" />
+                    </padding>
+                    <children>
+                        <VBox alignment="CENTER_LEFT">
+                            <children>
+                                <Label fx:id="lblWelcome" text="Bienvenue, Chargement..." textFill="#2c3e50">
+                                    <font>
+                                        <Font name="System Bold" size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEmail" text="reception@hotel.com" textFill="#7f8c8d" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                    <children>
+                        <ProgressIndicator maxWidth="50" maxHeight="50" />
+                    </children>
+                </StackPane>
+                
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

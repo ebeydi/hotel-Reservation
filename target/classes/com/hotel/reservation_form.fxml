@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.hotel.controller.ReservationFormController"
+      spacing="10" alignment="CENTER">
+
+    <children>
+
+        <Label text="Nouvelle réservation" style="-fx-font-size:18;"/>
+
+        <TextField fx:id="txtNomClient" promptText="Email client"/>
+        <TextField fx:id="txtChambre" promptText="Numéro chambre"/>
+        <TextField fx:id="txtNbPersonnes" promptText="Nombre personnes"/>
+        <TextField fx:id="txtMontantTotal" promptText="Montant"/>
+
+        <DatePicker fx:id="dpArrivee"/>
+        <DatePicker fx:id="dpDepart"/>
+
+        <HBox spacing="10">
+            <Button text="Enregistrer" onAction="#handleEnregistrer"/>
+            <Button text="Annuler" onAction="#handleAnnuler"/>
+        </HBox>
+
+    </children>
+</VBox>
