@@ -2,52 +2,66 @@ package com.hotel;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import com.hotel.dao.USERDAO;
 import com.hotel.model.Users;
 import com.hotel.model.UsersRole;
+import java.net.URL;
 
 public class Main extends Application {
 
     @Override
-    public void start(@SuppressWarnings("exports") Stage primaryStage) throws Exception {
-        
-        // --- ÉTAPE 1 : CRÉATION DE L'ADMIN AU DÉMARRAGE ---
-        setupAdminAccount();
+    public void start(Stage primaryStage) {
+        try {
+            // 1. Initialisation de l'admin
+            //setupAdminAccount();
 
-        // --- ÉTAPE 2 : CHARGEMENT DE L'INTERFACE ---
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/Auth.fxml"));
-        primaryStage.setScene(new Scene(loader.load()));
-        primaryStage.setTitle("La Petite Côte - Connexion");
-        primaryStage.show();
+            // 2. Vérification du chemin FXML (Attention à la minuscule/majuscule !)
+            // Remplace "auth.fxml" par le nom EXACT de ton fichier dans ton dossier resources
+            URL fxmlLocation = getClass().getResource("/com/hotel/auth.fxml");
+
+            if (fxmlLocation == null) {
+                System.err.println("❌ Erreur : Le fichier FXML est introuvable au chemin indiqué !");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Teranga Booking - Connexion");
+            primaryStage.centerOnScreen();
+            primaryStage.show();
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du lancement de l'application :");
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Vérifie si l'admin existe, sinon le crée.
-     */
     private void setupAdminAccount() {
         USERDAO dao = new USERDAO();
-        
-        // On tente de voir si l'admin par défaut peut se connecter
-        // Note: Assure-toi que ton USERDAO a bien la méthode login(String, String)
+        // On vérifie si l'admin existe déjà
         if (dao.login("admin@hotel.com", "admin123") == null) {
             System.out.println("ℹ️ Initialisation du compte Administrateur...");
-            
+
+            // Assure-toi que ton constructeur Users() sans paramètres existe
             Users admin = new Users();
             admin.setNom("SYSTEM");
             admin.setPrenom("Admin");
             admin.setEmail("admin@hotel.com");
-            admin.setPassword("admin123");
-            admin.setRole(UsersRole.ADMIN); // Utilise l'Enum ADMIN
+            admin.setLogin("admin@hotel.com"); // Important si ton USERDAO utilise le login
+            admin.setPassword("admin123");   // Vérifie si c'est setPassword ou setMotDePasse
+            admin.setRole(UsersRole.ADMIN);
             admin.setTelephone("00000000");
-            admin.setAdresse("Hotel");
-            admin.setNationalite("Senegal");
+            admin.setAdresse("Sénégal");
+            admin.setNationalite("Sénégalaise");
 
             if (USERDAO.save(admin)) {
-                System.out.println("✅ Succès : Connectez-vous avec admin@hotel.com / admin123");
-            } else {
-                System.err.println("❌ Échec de la création automatique de l'Admin.");
+                System.out.println("✅ Succès : Compte admin créé.");
             }
         }
     }

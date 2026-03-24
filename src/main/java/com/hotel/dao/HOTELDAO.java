@@ -3,6 +3,8 @@ package com.hotel.dao;
 import com.hotel.database.connexionDB;
 import com.hotel.model.Hotel;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HOTELDAO {
 
@@ -26,6 +28,23 @@ public class HOTELDAO {
             }
         } catch (SQLException e) { e.printStackTrace(); }
         return h;
+    }
+    public List<com.hotel.model.Hotel> getHotelsByVille(String ville) {
+        List<Hotel> liste = new ArrayList<>();
+        String sql = "SELECT * FROM hotel WHERE ville = ?";
+        try (Connection conn = connexionDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, ville);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                com.hotel.model.Hotel h = new com.hotel.model.Hotel();
+                h.setNom(rs.getString("nom"));
+                h.setDescription(rs.getString("description"));
+                // ... autres champs
+                liste.add(h);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return liste;
     }
 
     public boolean update(Hotel h) {

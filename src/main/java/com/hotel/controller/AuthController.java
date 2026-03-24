@@ -1,7 +1,6 @@
 package com.hotel.controller;
 
 import com.hotel.dao.USERDAO;
-import com.hotel.model.UserSession;
 import com.hotel.model.Users;
 import com.hotel.model.UsersRole;
 import javafx.fxml.FXML;
@@ -17,47 +16,55 @@ public class AuthController {
 
     @FXML private VBox vboxLogin, vboxRegister;
     @FXML private Label lblError;
-    @FXML private TextField emailLogin, nomRegister, prenomRegister, emailRegister, phoneRegister, adresseRegister, nationaliteRegister;
+    // CORRECTION : phoneRegister a été supprimé ici
+    @FXML private TextField emailLogin, nomRegister, prenomRegister, emailRegister, adresseRegister, nationaliteRegister;
     @FXML private PasswordField passwordLogin, passRegister;
 
     @FXML
     private void handleLogin() {
-        lblError.setText("");
         String email = emailLogin.getText();
         String pass = passwordLogin.getText();
 
         if (email.isEmpty() || pass.isEmpty()) {
-            showError("❌ Veuillez remplir tous les champs");
+            showError("❌ Veuillez remplir tous les champs.");
             return;
         }
 
-        USERDAO dao = new USERDAO();
-        Users user = dao.login(email, pass);
+        try {
+            USERDAO dao = new USERDAO();
+            Users user = dao.login(email, pass);
 
-        if (user != null) {
-            UserSession.setInstance(user);
-            System.out.println("✅ Connexion réussie : " + user.getNom() + " | Rôle : " + user.getRole());
-            
-            // On appelle la nouvelle méthode de navigation intelligente
-            navigateToDashboard(user.getRole());
-        } else {
-            showError("❌ Email ou mot de passe incorrect");
+            if (user != null) {
+                System.out.println("✅ Connexion réussie pour : " + user.getNom());
+                navigateToDashboard(user);
+            } else {
+                showError("❌ Email ou mot de passe incorrect.");
+            }
+        } catch (Exception e) {
+            showError("❌ Erreur de base de données. Vérifiez XAMPP.");
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void handleRegister() {
         if (isAnyFieldEmpty()) {
-            showError("❌ Veuillez remplir les champs obligatoires");
+            showError("❌ Veuillez remplir les champs obligatoires.");
             return;
         }
 
+        // Création du nouvel utilisateur
         Users newUser = new Users(
-            null, emailRegister.getText(), passRegister.getText(), 
-            nomRegister.getText(), prenomRegister.getText(), 
-            phoneRegister.getText(), adresseRegister.getText(), 
-            emailRegister.getText(), nationaliteRegister.getText(), 
-            UsersRole.CLIENT // Inscription par défaut en tant que CLIENT
+                null,
+                emailRegister.getText(),
+                passRegister.getText(),
+                nomRegister.getText(),
+                prenomRegister.getText(),
+                null, // CORRECTION : Le champ téléphone est passé à null
+                adresseRegister.getText(),
+                emailRegister.getText(),
+                nationaliteRegister.getText(),
+                UsersRole.CLIENT
         );
 
         if (USERDAO.save(newUser)) {
@@ -69,62 +76,48 @@ public class AuthController {
         }
     }
 
-    // --- LA MÉTHODE QUI GÈRE LA REDIRECTION SELON LE RÔLE ---
-   private void navigateToDashboard(UsersRole role) {
-    try {
-        String fxmlFile = "";
-        
-        // --- LOGIQUE DE ROUTAGE AMÉLIORÉE ---
-        switch (role) {
-            case ADMIN:
-                fxmlFile = "/com/hotel/home_admin.fxml";
-                break;
-            case RECEPTIONNISTE:
-                // C'est ici qu'on pointe vers ton nouveau dashboard
-                fxmlFile = "/com/hotel/home_receptionniste.fxml";
-                break;
-            case CLIENT:
-            default:
-                fxmlFile = "/com/hotel/home_client.fxml";
-                break;
+    private void navigateToDashboard(Users user) {
+        try {
+            String fxmlFile;
+            UsersRole role = user.getRole();
+
+            switch (role) {
+                case ADMIN: fxmlFile = "/com/hotel/home_admin.fxml"; break;
+                case RECEPTIONNISTE: fxmlFile = "/com/hotel/home_receptionniste.fxml"; break;
+                default: fxmlFile = "/com/hotel/home_client.fxml"; break;
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+
+            if (role == UsersRole.CLIENT) {
+                HomeClientController controller = loader.getController();
+                controller.setUserInfo(user.getNom(), user.getPrenom());
+            }
+
+            Stage stage = (Stage) emailLogin.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Teranga Booking - " + role);
+            stage.centerOnScreen();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("❌ Erreur de chargement de l'interface.");
         }
-
-        System.out.println("🚀 Chargement de l'interface : " + fxmlFile);
-
-        Stage stage = (Stage) emailLogin.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-        Parent root = loader.load();
-        
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.centerOnScreen();
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        showError("❌ Erreur critique : Impossible de charger " + role);
     }
-}
 
     private void showError(String message) {
         lblError.setText(message);
-        lblError.setStyle("-fx-text-fill: #e74c3c;");
+        lblError.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
     }
 
     private boolean isAnyFieldEmpty() {
         return nomRegister.getText().isEmpty() || emailRegister.getText().isEmpty() || passRegister.getText().isEmpty();
     }
 
-    @FXML
-    private void showRegisterForm() {
-        lblError.setText("");
-        toggleForms(false);
-    }
-
-    @FXML
-    private void showLoginForm() {
-        lblError.setText("");
-        toggleForms(true);
-    }
+    @FXML private void showRegisterForm() { lblError.setText(""); toggleForms(false); }
+    @FXML private void showLoginForm() { lblError.setText(""); toggleForms(true); }
 
     private void toggleForms(boolean showLogin) {
         vboxLogin.setVisible(showLogin);
