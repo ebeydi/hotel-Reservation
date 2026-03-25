@@ -6,7 +6,7 @@ import java.util.List;
 import com.hotel.database.connexionDB;
 import com.hotel.model.*;
 
-public class ReservationDAO {
+public class RESERVATIONDAO {
 
     // Requête de base pour récupérer une réservation avec toutes ses relations (JOIN)
    private static final String BASE_QUERY = 

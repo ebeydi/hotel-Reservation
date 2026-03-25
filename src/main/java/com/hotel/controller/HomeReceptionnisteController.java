@@ -1,27 +1,44 @@
 package com.hotel.controller;
 
 import com.hotel.dao.RESERVATIONDAO;
-import com.hotel.model.Reservation;
+import com.hotel.model.UserSession;
+import com.hotel.model.Users;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.util.Optional;
 
 public class HomeReceptionnisteController {
 
     @FXML private StackPane contentArea;
+    @FXML private Label lblWelcome, lblEmail;
+
     private final RESERVATIONDAO reservationDAO = new RESERVATIONDAO();
 
     @FXML
     public void initialize() {
-        // Lancement du dashboard après que tout soit chargé
-        Platform.runLater(() -> handleAccueil(null));
+        // Chargement des infos utilisateur
+        Platform.runLater(() -> {
+            Users currentUser = UserSession.getInstance();
+            if (currentUser != null) {
+                lblWelcome.setText("Bienvenue, " + currentUser.getPrenom() + " !");
+                lblEmail.setText(currentUser.getEmail());
+            } else {
+                lblWelcome.setText("Bienvenue, Chargement...");
+                lblEmail.setText("");
+            }
+            // Charger le tableau de bord par défaut
+            handleAccueil(null);
+        });
     }
 
     /** Charge une vue FXML dans le contentArea */
@@ -51,11 +68,8 @@ public class HomeReceptionnisteController {
     /** Check-In client */
     @FXML
     public void handleCheckIn(ActionEvent event) {
-        System.out.println("CLICK CHECK-IN"); // Debug
         Optional<String> result = showInputDialog("Check-In", "Enregistrement Arrivée", "Entrez le numéro de réservation :");
-
         result.ifPresent(numRes -> {
-            System.out.println("Numéro réservation : " + numRes); // Debug
             try {
                 boolean ok = reservationDAO.checkIn(numRes);
                 if (ok) {
@@ -74,11 +88,8 @@ public class HomeReceptionnisteController {
     /** Check-Out client */
     @FXML
     public void handleCheckOut(ActionEvent event) {
-        System.out.println("CLICK CHECK-OUT"); // Debug
         Optional<String> result = showInputDialog("Check-Out", "Validation Départ", "Entrez le numéro de réservation :");
-
         result.ifPresent(numRes -> {
-            System.out.println("Numéro réservation : " + numRes); // Debug
             try {
                 boolean ok = reservationDAO.checkOut(numRes);
                 if (ok) {
@@ -93,21 +104,25 @@ public class HomeReceptionnisteController {
             }
         });
     }
-@FXML
-private void handleLogout() {
-    try {
-        // On suppose que tu as auth.fxml dans /com/hotel/
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
-        Parent root = loader.load();
-        javafx.stage.Stage stage = (javafx.stage.Stage) contentArea.getScene().getWindow();
-        stage.setScene(new javafx.scene.Scene(root));
-        stage.centerOnScreen();
-        stage.show();
-    } catch (Exception e) {
-        e.printStackTrace();
-        showError("Erreur Logout", "Impossible de se déconnecter.");
+
+    /** Déconnexion / Logout */
+    @FXML
+    private void handleLogout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.centerOnScreen();
+            stage.show();
+            // Supprimer la session actuelle
+            UserSession.clean();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Erreur Logout", "Impossible de se déconnecter.");
+        }
     }
-}
+
     /** Dialog pour entrer un texte (numéro de réservation) */
     private Optional<String> showInputDialog(String title, String header, String content) {
         TextInputDialog dialog = new TextInputDialog();

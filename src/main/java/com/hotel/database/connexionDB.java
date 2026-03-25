@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class connexionDB {
-    private static final String URL = "jdbc:mysql://localhost:3306/hotel_reservation";
+    private static final String URL = "jdbc:mysql://localhost:3306/hotel_db?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = ""; // Par défaut vide sur XAMPP/WAMP
 

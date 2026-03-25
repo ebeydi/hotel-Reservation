@@ -1,11 +1,14 @@
 package com.hotel.controller;
 
+import java.io.File;
+
 import com.hotel.dao.HOTELDAO;
 import com.hotel.model.Hotel;
 import com.hotel.model.HotelSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.FileChooser;
 
 public class HotelProfilController {
 
@@ -17,7 +20,7 @@ public class HotelProfilController {
     @FXML private TextField txtEmail;
     @FXML private TextField txtTelephone;
     @FXML private TextArea txtDescription;
-    @FXML private ComboBox<String> comboStatut; // Pour ton attribut Statut
+    @FXML private ComboBox<String> comboStatut;
 
     private HOTELDAO hotelDao = new HOTELDAO();
 
@@ -26,7 +29,7 @@ public class HotelProfilController {
      */
     @FXML
     public void initialize() {
-        // Initialiser le ComboBox des statuts (exemple)
+        // Initialiser le ComboBox des statuts
         if (comboStatut != null) {
             comboStatut.getItems().addAll("OUVERT", "FERME", "EN_TRAVAUX");
         }
@@ -51,7 +54,7 @@ public class HotelProfilController {
             txtDescription.setText(currentHotel.getDescription());
             
             if (currentHotel.getStatut() != null) {
-                comboStatut.setValue(currentHotel.getStatut().toString());
+                comboStatut.setValue(currentHotel.getStatut());
             }
         }
     }
@@ -61,15 +64,18 @@ public class HotelProfilController {
      */
     @FXML
     private void handleUpdateHotel() {
-        // 1. On récupère l'objet hôtel de la session
+
         Hotel h = HotelSession.getHotel();
-        
+        boolean isNew = false;
+
+        // 🔥 CAS 1 : création
         if (h == null) {
-            showAlert(AlertType.ERROR, "Erreur", "Aucun hôtel n'est chargé en session.");
-            return;
+            h = new Hotel();
+            h.setId(java.util.UUID.randomUUID().toString());
+            isNew = true;
         }
 
-        // 2. On met à jour l'objet avec les saisies de l'utilisateur
+        // 🔥 remplissage des données
         h.setNom(txtNom.getText());
         h.setVille(txtVille.getText());
         h.setAdresse(txtAdresse.getText());
@@ -77,20 +83,41 @@ public class HotelProfilController {
         h.setEmail(txtEmail.getText());
         h.setTelephone(txtTelephone.getText());
         h.setDescription(txtDescription.getText());
-        
-        // Note: Pour le statut, il faudra convertir le String du combo en ton Enum Statut
-        // h.setStatut(Statut.valueOf(comboStatut.getValue())); 
+        h.setStatut(comboStatut.getValue());
+       h.setImage(txtImage.getText() != null ? txtImage.getText() : "default.jpg");
 
-        // 3. On enregistre en base de données via le DAO
-        if (hotelDao.update(h)) {
-            // Mise à jour de la session globale pour que les autres pages voient le changement
-            HotelSession.setHotel(h);
-            showAlert(AlertType.INFORMATION, "Succès", "Les informations de l'hôtel ont été mises à jour !");
+        boolean success;
+
+        // 🔥 décision INSERT ou UPDATE
+        if (isNew) {
+            success = hotelDao.insert(h);
         } else {
-            showAlert(AlertType.ERROR, "Échec", "Impossible de mettre à jour la base de données.");
+            success = hotelDao.update(h);
+        }
+
+        if (success) {
+            // mettre à jour la session
+            HotelSession.setHotel(h);
+            showAlert(AlertType.INFORMATION, "Succès", "Hôtel enregistré !");
+        } else {
+            showAlert(AlertType.ERROR, "Erreur", "Échec de l'opération.");
         }
     }
+@FXML private TextField txtImage; // pour l'image
 
+@FXML
+private void handleChooseImage() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Sélectionner une image");
+    fileChooser.getExtensionFilters().addAll(
+        new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+    );
+    File file = fileChooser.showOpenDialog(txtImage.getScene().getWindow());
+    if (file != null) {
+        txtImage.setText(file.getName()); // on récupère juste le nom pour stocker en DB
+        // tu peux copier l'image dans un dossier ressources si besoin
+    }
+}
     /**
      * Utilitaire pour afficher des messages à l'utilisateur
      */

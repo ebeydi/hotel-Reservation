@@ -5,6 +5,7 @@ import com.hotel.dao.TYPECHAMBREDAO;
 import com.hotel.model.Chambre;
 import com.hotel.model.EtatChambre;
 import com.hotel.model.TypeChambre;
+import com.hotel.model.HotelSession;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -15,7 +16,7 @@ public class ManageRoomController {
     @FXML private TextField txtNumero;
     @FXML private ComboBox<TypeChambre> comboType;
     @FXML private ComboBox<EtatChambre> comboEtat;
-    
+
     @FXML private TableView<Chambre> roomTable;
     @FXML private TableColumn<Chambre, String> colNumero;
     @FXML private TableColumn<Chambre, TypeChambre> colType;
@@ -27,7 +28,7 @@ public class ManageRoomController {
     @FXML
     public void initialize() {
         System.out.println("🔄 Initialisation du contrôleur des chambres...");
-        
+
         // 1. Remplissage des ComboBox
         comboEtat.setItems(FXCollections.observableArrayList(EtatChambre.values()));
         loadTypeChambres();
@@ -37,6 +38,7 @@ public class ManageRoomController {
         colType.setCellValueFactory(new PropertyValueFactory<>("typeChambre"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etat"));
 
+        // 3. Remplissage du tableau avec les chambres de l'hôtel connecté
         refreshTable();
     }
 
@@ -50,8 +52,14 @@ public class ManageRoomController {
     }
 
     private void refreshTable() {
+        if (HotelSession.getHotel() == null) {
+            System.err.println("❌ Aucun hôtel en session !");
+            return;
+        }
         try {
-            roomTable.setItems(FXCollections.observableArrayList(chambreDao.getAllChambres()));
+            roomTable.setItems(FXCollections.observableArrayList(
+                chambreDao.getAllChambres(HotelSession.getHotel().getId())
+            ));
         } catch (Exception e) {
             System.err.println("❌ Erreur refresh table : " + e.getMessage());
         }
@@ -61,7 +69,7 @@ public class ManageRoomController {
     private void handleAddRoom() {
         try {
             System.out.println("--- CLIC DÉTECTÉ ---");
-            
+
             // Validation simple
             if (txtNumero.getText().trim().isEmpty() || comboType.getValue() == null || comboEtat.getValue() == null) {
                 showAlert("Champs vides", "Veuillez remplir tous les champs avant d'ajouter.");
@@ -75,14 +83,14 @@ public class ManageRoomController {
 
             System.out.println("💾 Tentative de sauvegarde de la chambre " + c.getNumero());
 
-            if (CHAMBREDAO.save(c)) {
+            if (chambreDao.save(c)) {
                 System.out.println("✅ Chambre ajoutée avec succès !");
                 txtNumero.clear();
                 refreshTable();
             } else {
                 System.err.println("❌ Échec de la sauvegarde en base de données.");
             }
-            
+
         } catch (Exception e) {
             System.err.println("💥 CRASH DANS handleAddRoom :");
             e.printStackTrace();

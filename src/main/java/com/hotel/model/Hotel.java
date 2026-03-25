@@ -12,7 +12,8 @@ public class Hotel {
     private String description;
     private String telephone;
     private String email;
-    private String statut; // Tu peux le changer en Enum Statut si tu en as créé un
+    private String statut;
+    private String image; // Tu peux le changer en Enum Statut si tu en as créé un
 
     public Hotel() {}
 
@@ -90,6 +91,14 @@ public class Hotel {
         this.statut = statut;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     /**
      * Utile pour le débogage ou l'affichage simple
      */
@@ -99,6 +108,7 @@ public class Hotel {
                 "nom='" + nom + '\'' +
                 ", ville='" + ville + '\'' +
                 ", statut='" + statut + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

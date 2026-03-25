@@ -27,6 +27,13 @@
         
         <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
         <TextArea fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="5" prefHeight="100"/>
+        
+        <!-- 🔥 Champ Image -->
+        <Label text="Image de l'hôtel :" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
+            <TextField fx:id="txtImage" prefWidth="200"/>
+            <Button text="Choisir..." onAction="#handleChooseImage"/>
+        </HBox>
     </GridPane>
     
     <Button text="Enregistrer les modifications" onAction="#handleUpdateHotel" 

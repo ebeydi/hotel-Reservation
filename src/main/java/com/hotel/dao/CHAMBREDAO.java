@@ -10,7 +10,7 @@ import java.util.UUID;
 public class CHAMBREDAO {
 
     /**
-     * Récupère une chambre par son numéro et injecte son TypeChambre (avec le tarif)
+     * Récupère une chambre par son numéro et son hôtel
      */
     public Chambre findByNumero(String numero) {
         String sql = "SELECT c.*, tc.nom_type, tc.tarif_nuit, tc.capacite " +
@@ -25,7 +25,6 @@ public class CHAMBREDAO {
             ps.setString(2, HotelSession.getHotel().getId());
             
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 return mapResultSetToChambre(rs);
             }
@@ -36,9 +35,9 @@ public class CHAMBREDAO {
     }
 
     /**
-     * Récupère toutes les chambres d'un hôtel
+     * Récupère toutes les chambres d'un hôtel donné
      */
-    public List<Chambre> getAllChambres() {
+    public List<Chambre> getAllChambres(String hotelId) {
         List<Chambre> list = new ArrayList<>();
         String sql = "SELECT c.*, tc.nom_type, tc.tarif_nuit, tc.capacite " +
                      "FROM chambre c " +
@@ -48,7 +47,7 @@ public class CHAMBREDAO {
         try (Connection conn = connexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            ps.setString(1, HotelSession.getHotel().getId());
+            ps.setString(1, hotelId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -63,17 +62,17 @@ public class CHAMBREDAO {
     /**
      * Sauvegarde une nouvelle chambre
      */
-    public static boolean save(Chambre chambre) {
+    public boolean save(Chambre chambre) {
         String sql = "INSERT INTO chambre (id, numero, etat, id_type_chambre, id_hotel) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = connexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            String uniqueID = UUID.randomUUID().toString().substring(0, 8);
+            String uniqueID = UUID.randomUUID().toString();
             ps.setString(1, uniqueID);
             ps.setString(2, chambre.getNumero());
             ps.setString(3, chambre.getEtat().name());
-            ps.setString(4, chambre.getTypeChambre().getId()); 
+            ps.setString(4, chambre.getTypeChambre().getId());
             ps.setString(5, HotelSession.getHotel().getId());
 
             return ps.executeUpdate() > 0;
@@ -83,19 +82,21 @@ public class CHAMBREDAO {
         }
     }
 
-    // Helper privé pour éviter la répétition de code (Mapping SQL -> Objet)
+    /**
+     * Helper privé pour éviter la répétition de code (Mapping SQL -> Objet)
+     */
     private Chambre mapResultSetToChambre(ResultSet rs) throws SQLException {
         Chambre c = new Chambre();
         c.setId(rs.getString("id"));
         c.setNumero(rs.getString("numero"));
         c.setEtat(EtatChambre.valueOf(rs.getString("etat")));
-        
+
         TypeChambre tc = new TypeChambre();
         tc.setId(rs.getString("id_type_chambre"));
         tc.setNomType(rs.getString("nom_type"));
         tc.setTarifNuit(rs.getDouble("tarif_nuit"));
         tc.setCapacite(rs.getInt("capacite"));
-        
+
         c.setTypeChambre(tc);
         c.setHotel(HotelSession.getHotel());
         return c;
