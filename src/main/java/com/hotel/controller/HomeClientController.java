@@ -10,8 +10,6 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
@@ -44,7 +42,9 @@ public class HomeClientController {
     public void setUserInfo(String nom, String prenom) {
         if (lblCustomerName != null) {
             String n = (nom != null) ? nom.trim().toUpperCase() : "";
-            String p = (prenom != null) ? prenom.substring(0,1).toUpperCase() + prenom.substring(1).toLowerCase() : "";
+            String p = (prenom != null && !prenom.isEmpty())
+                    ? prenom.substring(0,1).toUpperCase() + prenom.substring(1).toLowerCase()
+                    : "";
             lblCustomerName.setText("BIENVENUE, " + p + " " + n);
             animateWelcome();
         }
@@ -65,125 +65,77 @@ public class HomeClientController {
     }
 
     /** -------------------- AFFICHAGE HOTELS -------------------- **/
-  @FXML
-public void loadHotels(String ville) {
+    @FXML
+    public void loadHotels(String ville) {
 
-    containerHotels.getChildren().clear();
+        if (containerHotels == null) return;
 
-    List<Hotel> hotels = hotelDAO.getHotelsByVille(ville);
+        containerHotels.getChildren().clear();
 
-    if (hotels.isEmpty()) {
-        containerHotels.getChildren().add(new Label("Aucun hôtel disponible à " + ville));
-        return;
-    }
+        List<Hotel> hotels = hotelDAO.getHotelsByVille(ville);
 
-    for (Hotel h : hotels) {
-        VBox card = new VBox(10);
-        card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;");
-
-        Label nom = new Label(h.getNom());
-        Label desc = new Label(h.getDescription());
-
-        card.getChildren().addAll(nom, desc, new Separator());
-
-        List<Chambre> chambres = chambreDAO.getAllChambres(h.getId());
-
-        for (Chambre c : chambres) {
-
-            if (c.getEtat() != EtatChambre.DISPONIBLE) continue; // 🔥 filtre
-
-            HBox row = new HBox(10);
-
-            Label type = new Label(c.getTypeChambre().getNomType());
-            Label prix = new Label(c.getTypeChambre().getTarifNuit() + " FCFA");
-
-            DatePicker d1 = new DatePicker();
-            DatePicker d2 = new DatePicker();
-
-            Button btn = new Button("Réserver");
-
-            btn.setOnAction(e -> {
-                long jours = java.time.temporal.ChronoUnit.DAYS.between(d1.getValue(), d2.getValue());
-
-                if (jours > 0) {
-                    double total = jours * c.getTypeChambre().getTarifNuit();
-                    new Alert(Alert.AlertType.INFORMATION, "Total: " + total).show();
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "Dates invalides").show();
-                }
-            });
-
-            row.getChildren().addAll(type, prix, d1, d2, btn);
-            card.getChildren().add(row);
+        if (hotels.isEmpty()) {
+            containerHotels.getChildren().add(new Label("Aucun hôtel disponible à " + ville));
+            return;
         }
 
-        containerHotels.getChildren().add(card);
-    }
+        for (Hotel h : hotels) {
 
-    switchView(viewHotels);
-}
+            VBox card = new VBox(10);
+            card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;");
 
-    private VBox createHotelCard(Hotel h) {
-        VBox card = new VBox(10);
-        card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;");
+            Label nom = new Label(h.getNom());
+            Label desc = new Label(h.getDescription());
 
-        HBox top = new HBox(15);
-        top.setStyle("-fx-alignment: center-left;");
+            card.getChildren().addAll(nom, desc, new Separator());
 
-        ImageView iv = new ImageView();
-        try {
-            String path = "/com/hotel/images/" + h.getImage();
-            iv.setImage(new Image(getClass().getResourceAsStream(path)));
-        } catch (Exception e) {
-            System.err.println("Image introuvable : " + h.getImage());
-        }
-        iv.setFitWidth(200);
-        iv.setFitHeight(150);
+            List<Chambre> chambres = chambreDAO.getAllChambres(h.getId());
 
-        VBox details = new VBox(5);
-        Label lblNom = new Label(h.getNom());
-        lblNom.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
-        Label lblDesc = new Label(h.getDescription());
-        lblDesc.setWrapText(true);
+            for (Chambre c : chambres) {
 
-        details.getChildren().addAll(lblNom, lblDesc);
-        top.getChildren().addAll(iv, details);
-        card.getChildren().add(top);
-        card.getChildren().add(new Separator());
+                if (c.getEtat() != EtatChambre.DISPONIBLE) continue;
 
-        // Liste des chambres
-        List<Chambre> chambres = chambreDAO.getAllChambres(h.getId());
-        for (Chambre c : chambres) {
-            HBox row = new HBox(10);
-            row.setStyle("-fx-alignment: center-left;");
+                HBox row = new HBox(10);
 
-            Label lblType = new Label(c.getTypeChambre().getNomType() + " - " + c.getEtat());
-            Label lblPrix = new Label("Prix: " + c.getTypeChambre().getTarifNuit() + " FCFA");
+                Label type = new Label(c.getTypeChambre().getNomType());
+                Label prix = new Label(c.getTypeChambre().getTarifNuit() + " FCFA");
 
-            DatePicker dpDebut = new DatePicker(LocalDate.now());
-            DatePicker dpFin = new DatePicker(LocalDate.now().plusDays(1));
+                DatePicker d1 = new DatePicker(LocalDate.now());
+                DatePicker d2 = new DatePicker(LocalDate.now().plusDays(1));
 
-            Button btnReserver = new Button("Réserver");
-            btnReserver.setOnAction(ev -> {
-                long jours = ChronoUnit.DAYS.between(dpDebut.getValue(), dpFin.getValue());
-                if (jours > 0) {
-                    double total = jours * c.getTypeChambre().getTarifNuit();
-                    new Alert(Alert.AlertType.INFORMATION, "Réservation OK\nTotal: " + total + " FCFA").show();
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "Dates invalides").show();
-                }
-            });
+                Button btn = new Button("Réserver");
 
-            row.getChildren().addAll(lblType, lblPrix, dpDebut, dpFin, btnReserver);
-            card.getChildren().add(row);
+                btn.setOnAction(e -> {
+
+                    if (d1.getValue() == null || d2.getValue() == null) {
+                        new Alert(Alert.AlertType.ERROR, "Choisissez les dates").show();
+                        return;
+                    }
+
+                    long jours = ChronoUnit.DAYS.between(d1.getValue(), d2.getValue());
+
+                    if (jours > 0) {
+                        double total = jours * c.getTypeChambre().getTarifNuit();
+                        new Alert(Alert.AlertType.INFORMATION, "Total: " + total + " FCFA").show();
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Dates invalides").show();
+                    }
+                });
+
+                row.getChildren().addAll(type, prix, d1, d2, btn);
+                card.getChildren().add(row);
+            }
+
+            containerHotels.getChildren().add(card);
         }
 
-        return card;
+        switchView(viewHotels);
     }
 
     /** -------------------- SWITCH VUES -------------------- **/
     @FXML private void showLocalities() { switchView(viewLocalities); }
     @FXML private void showReservations() { switchView(viewReservations); }
+
     private void switchView(VBox v) {
         viewLocalities.setVisible(false);
         viewHotels.setVisible(false);
@@ -192,7 +144,8 @@ public void loadHotels(String ville) {
     }
 
     /** -------------------- MENU -------------------- **/
-    @FXML private void toggleMenu() {
+    @FXML
+    private void toggleMenu() {
         TranslateTransition tt = new TranslateTransition(Duration.millis(300), sideMenu);
         tt.setToX(menuVisible ? -300 : 0);
         menuVisible = !menuVisible;
@@ -210,20 +163,21 @@ public void loadHotels(String ville) {
     @FXML private void clickMbodjene() { loadHotels("Mbodjène"); }
     @FXML private void clickWarang() { loadHotels("Warang"); }
     @FXML private void clickJoal() { loadHotels("Joal"); }
+
+    /** -------------------- LOGOUT -------------------- **/
     @FXML
-private void handleLogout() {
-    try {
-        // Recharge la page de login
-        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
-        javafx.scene.Parent root = loader.load();
-        javafx.stage.Stage stage = (javafx.stage.Stage) sideMenu.getScene().getWindow();
-        stage.setScene(new javafx.scene.Scene(root));
-        stage.setTitle("Teranga Booking - Login");
-        stage.centerOnScreen();
-        stage.show();
-    } catch (Exception e) {
-        e.printStackTrace();
-        new Alert(Alert.AlertType.ERROR, "Impossible de se déconnecter.").show();
+    private void handleLogout() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
+            javafx.scene.Parent root = loader.load();
+            javafx.stage.Stage stage = (javafx.stage.Stage) sideMenu.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Teranga Booking - Login");
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Impossible de se déconnecter.").show();
+        }
     }
-}
 }
