@@ -2,10 +2,7 @@ package com.hotel.controller;
 
 import com.hotel.dao.CHAMBREDAO;
 import com.hotel.dao.TYPECHAMBREDAO;
-import com.hotel.model.Chambre;
-import com.hotel.model.EtatChambre;
-import com.hotel.model.TypeChambre;
-import com.hotel.model.HotelSession;
+import com.hotel.model.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,7 +13,6 @@ public class ManageRoomController {
     @FXML private TextField txtNumero;
     @FXML private ComboBox<TypeChambre> comboType;
     @FXML private ComboBox<EtatChambre> comboEtat;
-
     @FXML private TableView<Chambre> roomTable;
     @FXML private TableColumn<Chambre, String> colNumero;
     @FXML private TableColumn<Chambre, TypeChambre> colType;
@@ -29,16 +25,19 @@ public class ManageRoomController {
     public void initialize() {
         System.out.println("🔄 Initialisation du contrôleur des chambres...");
 
-        // 1. Remplissage des ComboBox
+        // 1️⃣ Remplissage des ComboBox
         comboEtat.setItems(FXCollections.observableArrayList(EtatChambre.values()));
         loadTypeChambres();
 
-        // 2. Configuration des colonnes
+        // 2️⃣ Configuration des colonnes
         colNumero.setCellValueFactory(new PropertyValueFactory<>("numero"));
         colType.setCellValueFactory(new PropertyValueFactory<>("typeChambre"));
         colEtat.setCellValueFactory(new PropertyValueFactory<>("etat"));
 
-        // 3. Remplissage du tableau avec les chambres de l'hôtel connecté
+        // 3️⃣ Fix resize policy
+        roomTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // 4️⃣ Remplissage du tableau avec les chambres de l'hôtel connecté
         refreshTable();
     }
 
@@ -58,7 +57,7 @@ public class ManageRoomController {
         }
         try {
             roomTable.setItems(FXCollections.observableArrayList(
-                chambreDao.getAllChambres(HotelSession.getHotel().getId())
+                    chambreDao.getAllChambres(HotelSession.getHotel().getId())
             ));
         } catch (Exception e) {
             System.err.println("❌ Erreur refresh table : " + e.getMessage());

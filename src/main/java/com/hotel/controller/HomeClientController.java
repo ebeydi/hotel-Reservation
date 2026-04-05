@@ -3,6 +3,7 @@ package com.hotel.controller;
 import com.hotel.dao.CHAMBREDAO;
 import com.hotel.dao.HOTELDAO;
 import com.hotel.model.Chambre;
+import com.hotel.model.EtatChambre;
 import com.hotel.model.Hotel;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -64,28 +65,63 @@ public class HomeClientController {
     }
 
     /** -------------------- AFFICHAGE HOTELS -------------------- **/
-    public void loadHotels(String ville) {
-        containerHotels.getChildren().clear();
+  @FXML
+public void loadHotels(String ville) {
 
-        try {
-            List<Hotel> hotels = hotelDAO.getHotelsByVille(ville);
+    containerHotels.getChildren().clear();
 
-            if (hotels.isEmpty()) {
-                containerHotels.getChildren().add(new Label("Aucun hôtel disponible à " + ville));
-                return;
-            }
+    List<Hotel> hotels = hotelDAO.getHotelsByVille(ville);
 
-            for (Hotel h : hotels) {
-                VBox hotelCard = createHotelCard(h);
-                containerHotels.getChildren().add(hotelCard);
-            }
+    if (hotels.isEmpty()) {
+        containerHotels.getChildren().add(new Label("Aucun hôtel disponible à " + ville));
+        return;
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+    for (Hotel h : hotels) {
+        VBox card = new VBox(10);
+        card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15;");
+
+        Label nom = new Label(h.getNom());
+        Label desc = new Label(h.getDescription());
+
+        card.getChildren().addAll(nom, desc, new Separator());
+
+        List<Chambre> chambres = chambreDAO.getAllChambres(h.getId());
+
+        for (Chambre c : chambres) {
+
+            if (c.getEtat() != EtatChambre.DISPONIBLE) continue; // 🔥 filtre
+
+            HBox row = new HBox(10);
+
+            Label type = new Label(c.getTypeChambre().getNomType());
+            Label prix = new Label(c.getTypeChambre().getTarifNuit() + " FCFA");
+
+            DatePicker d1 = new DatePicker();
+            DatePicker d2 = new DatePicker();
+
+            Button btn = new Button("Réserver");
+
+            btn.setOnAction(e -> {
+                long jours = java.time.temporal.ChronoUnit.DAYS.between(d1.getValue(), d2.getValue());
+
+                if (jours > 0) {
+                    double total = jours * c.getTypeChambre().getTarifNuit();
+                    new Alert(Alert.AlertType.INFORMATION, "Total: " + total).show();
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Dates invalides").show();
+                }
+            });
+
+            row.getChildren().addAll(type, prix, d1, d2, btn);
+            card.getChildren().add(row);
         }
 
-        switchView(viewHotels);
+        containerHotels.getChildren().add(card);
     }
+
+    switchView(viewHotels);
+}
 
     private VBox createHotelCard(Hotel h) {
         VBox card = new VBox(10);

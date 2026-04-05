@@ -3,6 +3,8 @@ package com.hotel.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import com.hotel.database.connexionDB;
 import com.hotel.model.*;
 
@@ -27,23 +29,35 @@ public class RESERVATIONDAO {
     /**
      * Sauvegarder une nouvelle réservation
      */
-    public void save(Reservation res) throws SQLException {
-        String sql = "INSERT INTO reservations (id, num_reservation, date_arrivee, date_depart, nb_personne, montant_total, statut, client_id, chambre_id) VALUES (?,?,?,?,?,?,?,?,?)";
-        
-        try (Connection conn = connexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, res.getId());
-            ps.setString(2, res.getNumReservation());
-            ps.setDate(3, new java.sql.Date(res.getDateArrive().getTime()));
-            ps.setDate(4, new java.sql.Date(res.getDateDepart().getTime()));
-            ps.setInt(5, res.getNbPersonne());
-            ps.setFloat(6, res.getMontantTotal());
-            ps.setString(7, res.getStatut().name());
-            ps.setString(8, res.getClient().getId());
-            ps.setString(9, res.getChambre().getId());
-            ps.executeUpdate();
+    public boolean save(TypeChambre type) {
+    String sql = "INSERT INTO type_chambre (id, nomType, capacite, tarifNuit, description, hotel_id, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    try (Connection conn = connexionDB.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        String uniqueID = UUID.randomUUID().toString().substring(0, 8);
+
+        ps.setString(1, uniqueID);
+        ps.setString(2, type.getNomType());
+        ps.setInt(3, type.getCapacite());
+        ps.setDouble(4, type.getTarifNuit());
+        ps.setString(5, type.getDescription());
+        ps.setString(6, HotelSession.getHotel().getId());
+
+        // 🔥 CORRECTION IMPORTANTE
+        if (type.getStatut() == null) {
+            ps.setString(7, "ACTIF"); // valeur par défaut
+        } else {
+            ps.setString(7, type.getStatut().name());
         }
+
+        return ps.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur save TypeChambre : " + e.getMessage());
+        return false;
     }
+}
 
     /**
      * Récupérer toutes les réservations d'un hôtel spécifique
@@ -68,7 +82,7 @@ public class RESERVATIONDAO {
      * Vérifier si une chambre est disponible pour une période donnée (Anti-surréservation)
      */
     public boolean isChambreDisponible(String chambreId, java.util.Date debut, java.util.Date fin) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM reservations " +
+        String sql = "SELECT COUNT(*) FROM reservation " +
                      "WHERE chambre_id = ? AND statut NOT IN ('ANNULEE', 'TERMINEE') " +
                      "AND ((date_arrivee < ?) AND (date_depart > ?))";
         
@@ -91,7 +105,7 @@ public class RESERVATIONDAO {
      * CHECK-IN : Passer de CONFIRMEE à OCCUPEE
      */
     public boolean checkIn(String numReservation) throws SQLException {
-        String sql = "UPDATE reservations SET statut = 'OCCUPEE' WHERE num_reservation = ? AND statut = 'CONFIRMEE'";
+        String sql = "UPDATE reservation SET statut = 'OCCUPEE' WHERE num_reservation = ? AND statut = 'CONFIRMEE'";
         try (Connection conn = connexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, numReservation);
@@ -103,8 +117,8 @@ public class RESERVATIONDAO {
      * CHECK-OUT : Terminer la réservation et libérer la chambre (Transactionnelle)
      */
     public boolean checkOut(String numReservation) throws SQLException {
-        String findSql = "SELECT chambre_id FROM reservations WHERE num_reservation = ? AND statut = 'OCCUPEE'";
-        String upRes = "UPDATE reservations SET statut = 'TERMINEE' WHERE num_reservation = ?";
+        String findSql = "SELECT chambre_id FROM reservation WHERE num_reservation = ? AND statut = 'OCCUPEE'";
+        String upRes = "UPDATE reservation SET statut = 'TERMINEE' WHERE num_reservation = ?";
         String upCham = "UPDATE chambres SET etat = 'DISPONIBLE' WHERE id = ?";
 
         Connection conn = null;

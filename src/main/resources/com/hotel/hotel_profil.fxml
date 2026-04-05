@@ -1,41 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="20" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hotel.controller.HotelProfilController">
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-    
-    <Label text="PARAMÈTRES DE L'ÉTABLISSEMENT" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    
+<VBox spacing="20" style="-fx-background-color: white;"
+      xmlns="[javafx.com](http://javafx.com/javafx/8)" 
+      xmlns:fx="[javafx.com](http://javafx.com/fxml/1)"
+      fx:controller="com.hotel.controller.HotelProfilController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="PARAMÈTRES DE L'ÉTABLISSEMENT" 
+           style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+
     <GridPane hgap="10" vgap="10">
+
         <Label text="Nom de l'hôtel :" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
         <TextField fx:id="txtNom" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
-        
+
         <Label text="Ville :" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <TextField fx:id="txtVille" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        
+
         <Label text="Adresse :" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
         <TextField fx:id="txtAdresse" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-        <Label text="Téléphone :" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <TextField fx:id="txtTelephone" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        
-        <Label text="Email :" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-        
-        <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <TextArea fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="5" prefHeight="100"/>
-        
-        <!-- 🔥 Champ Image -->
-        <Label text="Image de l'hôtel :" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
+        <Label text="Catégorie :" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="txtCategorie" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="Téléphone :" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="txtTelephone" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <Label text="Email :" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <TextArea fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="6" prefHeight="100"/>
+
+        <Label text="Image de l'hôtel :" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="7">
             <TextField fx:id="txtImage" prefWidth="200"/>
             <Button text="Choisir..." onAction="#handleChooseImage"/>
         </HBox>
+
+        <Label text="Statut :" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+        <ComboBox fx:id="comboStatut" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+
     </GridPane>
-    
-    <Button text="Enregistrer les modifications" onAction="#handleUpdateHotel" 
+
+    <Button text="Enregistrer les modifications" 
+            onAction="#handleUpdateHotel"
             style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
 </VBox>

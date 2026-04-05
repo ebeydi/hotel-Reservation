@@ -5,6 +5,8 @@ import java.io.File;
 import com.hotel.dao.HOTELDAO;
 import com.hotel.model.Hotel;
 import com.hotel.model.HotelSession;
+import com.hotel.model.Statut;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -12,7 +14,6 @@ import javafx.stage.FileChooser;
 
 public class HotelProfilController {
 
-    // Liaison avec le fichier FXML
     @FXML private TextField txtNom;
     @FXML private TextField txtVille;
     @FXML private TextField txtAdresse;
@@ -20,30 +21,24 @@ public class HotelProfilController {
     @FXML private TextField txtEmail;
     @FXML private TextField txtTelephone;
     @FXML private TextArea txtDescription;
-    @FXML private ComboBox<String> comboStatut;
+    @FXML private ComboBox<Statut> comboStatut; // 🔥 ENUM
+    @FXML private TextField txtImage;
 
     private HOTELDAO hotelDao = new HOTELDAO();
 
-    /**
-     * S'exécute automatiquement au chargement de la page
-     */
     @FXML
     public void initialize() {
-        // Initialiser le ComboBox des statuts
-        if (comboStatut != null) {
-            comboStatut.getItems().addAll("OUVERT", "FERME", "EN_TRAVAUX");
-        }
 
-        // Charger les informations depuis la session
+        // 🔥 ComboBox enum
+        comboStatut.getItems().setAll(Statut.values());
+
         loadHotelData();
     }
 
-    /**
-     * Remplit les champs du formulaire avec les données de l'hôtel actuel
-     */
     private void loadHotelData() {
+
         Hotel currentHotel = HotelSession.getHotel();
-        
+
         if (currentHotel != null) {
             txtNom.setText(currentHotel.getNom());
             txtVille.setText(currentHotel.getVille());
@@ -52,30 +47,28 @@ public class HotelProfilController {
             txtEmail.setText(currentHotel.getEmail());
             txtTelephone.setText(currentHotel.getTelephone());
             txtDescription.setText(currentHotel.getDescription());
-            
+
+            // 🔥 correction enum
             if (currentHotel.getStatut() != null) {
                 comboStatut.setValue(currentHotel.getStatut());
             }
         }
     }
 
-    /**
-     * Action du bouton "Enregistrer les modifications"
-     */
     @FXML
     private void handleUpdateHotel() {
 
         Hotel h = HotelSession.getHotel();
         boolean isNew = false;
 
-        // 🔥 CAS 1 : création
+        // 🔥 création si null
         if (h == null) {
             h = new Hotel();
             h.setId(java.util.UUID.randomUUID().toString());
             isNew = true;
         }
 
-        // 🔥 remplissage des données
+        // 🔥 remplissage
         h.setNom(txtNom.getText());
         h.setVille(txtVille.getText());
         h.setAdresse(txtAdresse.getText());
@@ -83,12 +76,23 @@ public class HotelProfilController {
         h.setEmail(txtEmail.getText());
         h.setTelephone(txtTelephone.getText());
         h.setDescription(txtDescription.getText());
-        h.setStatut(comboStatut.getValue());
-       h.setImage(txtImage.getText() != null ? txtImage.getText() : "default.jpg");
+
+        // 🔥 CORRECTION CRITIQUE FK
+        if (comboStatut.getValue() == null) {
+            h.setStatut(Statut.ACTIF); // valeur par défaut
+        } else {
+            h.setStatut(comboStatut.getValue());
+        }
+
+        // 🔥 image safe
+        if (txtImage.getText() == null || txtImage.getText().isEmpty()) {
+            h.setImage("default.jpg");
+        } else {
+            h.setImage(txtImage.getText());
+        }
 
         boolean success;
 
-        // 🔥 décision INSERT ou UPDATE
         if (isNew) {
             success = hotelDao.insert(h);
         } else {
@@ -96,32 +100,32 @@ public class HotelProfilController {
         }
 
         if (success) {
-            // mettre à jour la session
             HotelSession.setHotel(h);
             showAlert(AlertType.INFORMATION, "Succès", "Hôtel enregistré !");
         } else {
             showAlert(AlertType.ERROR, "Erreur", "Échec de l'opération.");
         }
     }
-@FXML private TextField txtImage; // pour l'image
 
-@FXML
-private void handleChooseImage() {
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Sélectionner une image");
-    fileChooser.getExtensionFilters().addAll(
-        new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
-    );
-    File file = fileChooser.showOpenDialog(txtImage.getScene().getWindow());
-    if (file != null) {
-        txtImage.setText(file.getName()); // on récupère juste le nom pour stocker en DB
-        // tu peux copier l'image dans un dossier ressources si besoin
+    @FXML
+    private void handleChooseImage() {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner une image");
+
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        File file = fileChooser.showOpenDialog(txtImage.getScene().getWindow());
+
+        if (file != null) {
+            txtImage.setText(file.getName());
+        }
     }
-}
-    /**
-     * Utilitaire pour afficher des messages à l'utilisateur
-     */
+
     private void showAlert(AlertType type, String title, String content) {
+
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
