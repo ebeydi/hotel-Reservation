@@ -1,8 +1,8 @@
 package com.hotel.controller;
 
 import com.hotel.dao.USERDAO;
-import com.hotel.model.Users;
-import com.hotel.model.UsersRole;
+import com.hotel.dao.HOTELDAO;
+import com.hotel.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,14 +16,19 @@ public class AuthController {
 
     @FXML private VBox vboxLogin, vboxRegister;
     @FXML private Label lblError;
-    // CORRECTION : phoneRegister a été supprimé ici
     @FXML private TextField emailLogin, nomRegister, prenomRegister, emailRegister, adresseRegister, nationaliteRegister;
     @FXML private PasswordField passwordLogin, passRegister;
 
+    private USERDAO userDAO = new USERDAO();
+    private HOTELDAO hotelDAO = new HOTELDAO();
+
+    /**
+     * Gère la connexion de l'utilisateur (Client, Réceptionniste ou Admin)
+     */
     @FXML
     private void handleLogin() {
-        String email = emailLogin.getText();
-        String pass = passwordLogin.getText();
+        String email = emailLogin.getText().trim();
+        String pass = passwordLogin.getText().trim();
 
         if (email.isEmpty() || pass.isEmpty()) {
             showError("❌ Veuillez remplir tous les champs.");
@@ -31,21 +36,42 @@ public class AuthController {
         }
 
         try {
-            USERDAO dao = new USERDAO();
-            Users user = dao.login(email, pass);
+            // 1. Authentification via la base de données
+            Users user = userDAO.login(email, pass);
 
             if (user != null) {
                 System.out.println("✅ Connexion réussie pour : " + user.getNom());
+
+                // --- CRUCIAL : Initialisation de la Session Utilisateur ---
+                // C'est cette ligne qui permet au HomeClientController de ne plus être "null"
+                UserSession.setInstance(user); 
+
+                // 2. Initialisation de la session Hôtel pour le staff
+                if (user.getRole() == UsersRole.ADMIN || user.getRole() == UsersRole.RECEPTIONNISTE) {
+                    Hotel hotel = hotelDAO.getHotelByUserId(user.getId());
+                    if (hotel != null) {
+                        HotelSession.setHotel(hotel);
+                        System.out.println("🏨 Session Hôtel activée : " + hotel.getNom());
+                    } else {
+                        System.err.println("⚠️ Warning : L'employé n'est lié à aucun hôtel en base.");
+                    }
+                }
+
+                // 3. Redirection vers le tableau de bord approprié
                 navigateToDashboard(user);
+
             } else {
                 showError("❌ Email ou mot de passe incorrect.");
             }
         } catch (Exception e) {
-            showError("❌ Erreur de base de données. Vérifiez XAMPP.");
+            showError("❌ Erreur de connexion au serveur.");
             e.printStackTrace();
         }
     }
 
+    /**
+     * Gère l'inscription d'un nouveau client
+     */
     @FXML
     private void handleRegister() {
         if (isAnyFieldEmpty()) {
@@ -53,18 +79,19 @@ public class AuthController {
             return;
         }
 
-        // Création du nouvel utilisateur
+        // Création de l'objet utilisateur (rôle CLIENT par défaut)
         Users newUser = new Users(
-                null,
-                emailRegister.getText(),
-                passRegister.getText(),
-                nomRegister.getText(),
-                prenomRegister.getText(),
-                null, // CORRECTION : Le champ téléphone est passé à null
-                adresseRegister.getText(),
-                emailRegister.getText(),
-                nationaliteRegister.getText(),
-                UsersRole.CLIENT
+                null,                           // id (généré par le DAO/DB)
+                emailRegister.getText(),        // login
+                passRegister.getText(),         // motDePasse
+                nomRegister.getText(),          // nom
+                prenomRegister.getText(),       // prenom
+                null,                           // telephone
+                adresseRegister.getText(),      // adresse
+                emailRegister.getText(),        // email
+                nationaliteRegister.getText(),  // nationalite
+                UsersRole.CLIENT,               // role
+                null                            // hotelId (un client n'est pas lié à un hôtel)
         );
 
         if (USERDAO.save(newUser)) {
@@ -76,11 +103,15 @@ public class AuthController {
         }
     }
 
+    /**
+     * Change de scène selon le rôle de l'utilisateur
+     */
     private void navigateToDashboard(Users user) {
         try {
             String fxmlFile;
             UsersRole role = user.getRole();
 
+            // Sélection du fichier FXML selon le rôle
             switch (role) {
                 case ADMIN: fxmlFile = "/com/hotel/home_admin.fxml"; break;
                 case RECEPTIONNISTE: fxmlFile = "/com/hotel/home_receptionniste.fxml"; break;
@@ -90,11 +121,15 @@ public class AuthController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
+            // Si c'est un client, on peut passer les infos au controller via sa méthode spécifique
             if (role == UsersRole.CLIENT) {
-                HomeClientController controller = loader.getController();
-                controller.setUserInfo(user.getNom(), user.getPrenom());
+                Object controller = loader.getController();
+                if (controller instanceof HomeClientController) {
+                    ((HomeClientController) controller).setUserInfo(user.getNom(), user.getPrenom());
+                }
             }
 
+            // Changement de fenêtre
             Stage stage = (Stage) emailLogin.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Teranga Booking - " + role);
@@ -124,6 +159,5 @@ public class AuthController {
         vboxLogin.setManaged(showLogin);
         vboxRegister.setVisible(!showLogin);
         vboxRegister.setManaged(!showLogin);
-        if (showLogin) vboxLogin.toFront(); else vboxRegister.toFront();
     }
 }

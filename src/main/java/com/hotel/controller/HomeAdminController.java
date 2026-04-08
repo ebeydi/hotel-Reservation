@@ -1,6 +1,8 @@
 package com.hotel.controller;
 
 import java.io.IOException;
+import com.hotel.model.UserSession;
+import com.hotel.model.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,13 +48,38 @@ public class HomeAdminController {
 
     /**
      * Méthode "Moteur" : elle vide le centre et injecte la nouvelle page.
-     * Utiliser .setAll(node) est parfait car cela remplace le contenu précédent.
      */
     private void loadView(String fxmlPath) {
         try {
-            Parent node = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent node = loader.load();
+            
+            // Récupération du contrôleur de la page qu'on vient de charger
+            Object controller = loader.getController();
+            
+            // On récupère l'admin connecté via la session
+            Users admin = UserSession.getInstance();
+
+            // --- BLOC DASHBOARD ---
+            if (controller instanceof AdminDashboardController) {
+                System.out.println("📊 Envoi de l'ID Hotel au Dashboard : " + admin.getHotel_id());
+                ((AdminDashboardController) controller).setHotelContext(admin.getHotel_id());
+            }
+
+            // --- BLOC GESTION PERSONNEL ---
+            if (controller instanceof ManageStaffController) {
+                ((ManageStaffController) controller).setHotelContext(admin.getHotel_id());
+            }
+
+            // --- BLOC PROFIL HOTEL (AJOUTÉ POUR FIXER TON BUG) ---
+            if (controller instanceof HotelProfilController) {
+                System.out.println("🏨 Envoi de l'ID Hotel au Profil : " + admin.getHotel_id());
+                ((HotelProfilController) controller).setHotelContext(admin.getHotel_id());
+            }
+
             contentArea.getChildren().setAll(node);
             System.out.println("✅ Vue chargée : " + fxmlPath);
+            
         } catch (IOException e) {
             System.err.println("❌ Erreur de chargement (" + fxmlPath + ") : " + e.getMessage());
             e.printStackTrace();

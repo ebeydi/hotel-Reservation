@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.effect.DropShadow?>
 
-<VBox spacing="25.0" style="-fx-background-color: #f4f7f6;" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:controller="com.hotel.controller.ReceptionnistController" spacing="25.0" style="-fx-background-color: #f4f7f6;" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <padding>
       <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
    </padding>
@@ -15,46 +18,68 @@
             <Label text="Tableau de Bord Réception" textFill="#2c3e50">
                <font><Font name="Segoe UI Bold" size="28.0" /></font>
             </Label>
+            <Label fx:id="lblHotelName" text="Gestion de l'établissement" textFill="#7f8c8d">
+               <font><Font name="Segoe UI" size="14.0" /></font>
+            </Label>
          </children>
       </VBox>
 
-      <HBox spacing="25.0">
+      <HBox spacing="20.0">
          <children>
-            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #4facfe; -fx-background-radius: 15;">
+            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="180.0" style="-fx-background-color: #4facfe; -fx-background-radius: 15;">
                <padding><Insets left="20.0" /></padding>
                <children>
                   <Label text="RÉSERVATIONS" textFill="WHITE" />
-                  <Label fx:id="lblNbReservationsJour" text="0" textFill="WHITE"><font><Font name="System Bold" size="30.0" /></font></Label>
+                  <Label fx:id="lblNbReservationsJour" text="0" textFill="WHITE">
+                     <font><Font name="System Bold" size="30.0" /></font>
+                  </Label>
                </children>
             </VBox>
-            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #43e97b; -fx-background-radius: 15;">
+
+            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="180.0" style="-fx-background-color: #43e97b; -fx-background-radius: 15;">
                <padding><Insets left="20.0" /></padding>
                <children>
                   <Label text="EN CHAMBRE" textFill="WHITE" />
-                  <Label fx:id="lblNbCheckIn" text="0" textFill="WHITE"><font><Font name="System Bold" size="30.0" /></font></Label>
+                  <Label fx:id="lblNbCheckIn" text="0" textFill="WHITE">
+                     <font><Font name="System Bold" size="30.0" /></font>
+                  </Label>
                </children>
             </VBox>
-             <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #f5576c; -fx-background-radius: 15;">
+
+            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="180.0" style="-fx-background-color: #f5576c; -fx-background-radius: 15;">
                <padding><Insets left="20.0" /></padding>
                <children>
                   <Label text="DÉPARTS" textFill="WHITE" />
-                  <Label fx:id="lblNbCheckOut" text="0" textFill="WHITE"><font><Font name="System Bold" size="30.0" /></font></Label>
+                  <Label fx:id="lblNbCheckOut" text="0" textFill="WHITE">
+                     <font><Font name="System Bold" size="30.0" /></font>
+                  </Label>
+               </children>
+            </VBox>
+
+            <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="180.0" style="-fx-background-color: #667eea; -fx-background-radius: 15;">
+               <padding><Insets left="20.0" /></padding>
+               <children>
+                  <Label text="PERS. TOTALES" textFill="WHITE" />
+                  <Label fx:id="lblTotalPersonnes" text="0" textFill="WHITE">
+                     <font><Font name="System Bold" size="30.0" /></font>
+                  </Label>
                </children>
             </VBox>
          </children>
       </HBox>
 
-      <VBox spacing="10.0" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 15;">
+      <VBox spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 15;" VBox.vgrow="ALWAYS">
          <children>
             <TableView fx:id="tableReservations" VBox.vgrow="ALWAYS">
               <columns>
-                <TableColumn fx:id="colNumeroReservation" text="N° REF" />
-                <TableColumn fx:id="colNomClient" text="CLIENT" />
-                <TableColumn fx:id="colHotel" text="HÔTEL" />
-                <TableColumn fx:id="colChambre" text="CHAMBRE" />
-                <TableColumn fx:id="colDateArrivee" text="ARRIVÉE" />
-                <TableColumn fx:id="colDateDepart" text="DÉPART" />
-                <TableColumn fx:id="colStatut" text="STATUT" />
+                <TableColumn fx:id="colNumeroReservation" prefWidth="80.0" text="N° REF" />
+                <TableColumn fx:id="colNomClient" prefWidth="140.0" text="CLIENT" />
+                <TableColumn fx:id="colNbPersonnes" prefWidth="80.0" text="PERS." />
+                <TableColumn fx:id="colHotel" prefWidth="120.0" text="HÔTEL" />
+                <TableColumn fx:id="colChambre" prefWidth="100.0" text="CHAMBRE" />
+                <TableColumn fx:id="colDateArrivee" prefWidth="110.0" text="ARRIVÉE" />
+                <TableColumn fx:id="colDateDepart" prefWidth="110.0" text="DÉPART" />
+                <TableColumn fx:id="colStatut" prefWidth="100.0" text="STATUT" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

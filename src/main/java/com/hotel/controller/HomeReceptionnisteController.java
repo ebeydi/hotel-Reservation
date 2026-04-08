@@ -1,9 +1,9 @@
 package com.hotel.controller;
 
 import com.hotel.dao.RESERVATIONDAO;
+import com.hotel.model.Reservation;
 import com.hotel.model.UserSession;
 import com.hotel.model.Users;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,7 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
+import java.io.IOException;
 import java.util.Optional;
 
 public class HomeReceptionnisteController {
@@ -26,104 +26,115 @@ public class HomeReceptionnisteController {
 
     @FXML
     public void initialize() {
-        // Chargement des infos utilisateur
         Platform.runLater(() -> {
             Users currentUser = UserSession.getInstance();
             if (currentUser != null) {
                 lblWelcome.setText("Bienvenue, " + currentUser.getPrenom() + " !");
                 lblEmail.setText(currentUser.getEmail());
-            } else {
-                lblWelcome.setText("Bienvenue, Chargement...");
-                lblEmail.setText("");
             }
-            // Charger le tableau de bord par défaut
-            handleAccueil(null);
+            handleAccueil(null); // Charge le Dashboard au démarrage
         });
     }
 
-    /** Charge une vue FXML dans le contentArea */
-    private void loadView(String fxmlPath) {
+    /**
+     * Charge une vue FXML dans la zone centrale et retourne son FXMLLoader
+     */
+    private FXMLLoader loadView(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
             contentArea.getChildren().setAll(view);
-        } catch (Exception e) {
+            return loader;
+        } catch (IOException e) {
             e.printStackTrace();
-            showError("Erreur chargement", "Impossible de charger : " + fxmlPath + "\n" + e.getMessage());
+            showError("Erreur de navigation", "Impossible de charger la page : " + fxmlPath);
+            return null;
         }
     }
 
-    /** Tableau de bord */
+    /**
+     * Affiche le Dashboard (Tableau des réservations)
+     */
     @FXML
     public void handleAccueil(ActionEvent event) {
-        loadView("/com/hotel/dashboardRecep.fxml");
+        FXMLLoader loader = loadView("/com/hotel/dashboardRecep.fxml");
+        if (loader != null) {
+            // On lie le Dashboard au contrôleur principal pour permettre la navigation
+            ReceptionnistController dash = loader.getController();
+            dash.setMainController(this);
+        }
     }
 
-    /** Nouvelle réservation */
+    /**
+     * Ouvre le formulaire pour une nouvelle réservation (vierge)
+     */
     @FXML
     public void handlePasserReservation(ActionEvent event) {
-        loadView("/com/hotel/reservation_form.fxml");
+        FXMLLoader loader = loadView("/com/hotel/reservation_form.fxml");
+        if (loader != null) {
+            ReservationFormController controller = loader.getController();
+            controller.setMainController(this);
+            controller.setReservationExistante(null); // Mode Création
+        }
     }
 
-    /** Check-In client */
+    /**
+     * Ouvre le formulaire pré-rempli pour valider/modifier une demande existante
+     */
+    public void handleModifierReservation(Reservation reservation) {
+        if (reservation == null) return;
+
+        FXMLLoader loader = loadView("/com/hotel/reservation_form.fxml");
+        if (loader != null) {
+            ReservationFormController controller = loader.getController();
+            controller.setMainController(this);
+            
+            // TRANSMISSION CRUCIALE : On injecte l'objet sélectionné
+            controller.setReservationExistante(reservation); 
+            System.out.println("LOG: Navigation vers formulaire pour la réservation " + reservation.getNumReservation());
+        }
+    }
+
     @FXML
     public void handleCheckIn(ActionEvent event) {
-        Optional<String> result = showInputDialog("Check-In", "Enregistrement Arrivée", "Entrez le numéro de réservation :");
-        result.ifPresent(numRes -> {
-            try {
-                boolean ok = reservationDAO.checkIn(numRes);
-                if (ok) {
-                    showNotify("Succès", "Check-In validé. Le client est maintenant 'En chambre'.");
-                    handleAccueil(null); // Rafraîchit le dashboard
-                } else {
-                    showError("Erreur", "Numéro de réservation introuvable ou déjà enregistré.");
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                showError("Erreur SQL", ex.getMessage());
-            }
-        });
-    }
-
-    /** Check-Out client */
-    @FXML
-    public void handleCheckOut(ActionEvent event) {
-        Optional<String> result = showInputDialog("Check-Out", "Validation Départ", "Entrez le numéro de réservation :");
-        result.ifPresent(numRes -> {
-            try {
-                boolean ok = reservationDAO.checkOut(numRes);
-                if (ok) {
-                    showNotify("Succès", "Check-Out validé. La chambre est libérée.");
+        showInputDialog("Check-In", "Arrivée client", "Numéro de réservation :")
+            .ifPresent(numRes -> {
+                if (reservationDAO.checkIn(numRes)) {
+                    showNotify("Succès", "Le client a été enregistré avec succès.");
                     handleAccueil(null);
                 } else {
-                    showError("Erreur", "Impossible de faire le Check-Out (vérifiez le numéro ou le statut).");
+                    showError("Erreur", "Réservation introuvable ou déjà confirmée.");
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                showError("Erreur SQL", ex.getMessage());
-            }
-        });
+            });
     }
 
-    /** Déconnexion / Logout */
+    @FXML
+    public void handleCheckOut(ActionEvent event) {
+        showInputDialog("Check-Out", "Départ client", "Numéro de réservation :")
+            .ifPresent(numRes -> {
+                if (reservationDAO.checkOut(numRes)) {
+                    showNotify("Succès", "Chambre libérée et dossier clôturé.");
+                    handleAccueil(null);
+                } else {
+                    showError("Erreur", "Échec du Check-Out (vérifiez le numéro).");
+                }
+            });
+    }
+
     @FXML
     private void handleLogout() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/hotel/auth.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/com/hotel/auth.fxml"));
             Stage stage = (Stage) contentArea.getScene().getWindow();
             stage.setScene(new javafx.scene.Scene(root));
-            stage.centerOnScreen();
-            stage.show();
-            // Supprimer la session actuelle
             UserSession.clean();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur Logout", "Impossible de se déconnecter.");
+        } catch (IOException e) {
+            showError("Erreur", "Déconnexion impossible.");
         }
     }
 
-    /** Dialog pour entrer un texte (numéro de réservation) */
+    // --- Utilitaires d'interface ---
+
     private Optional<String> showInputDialog(String title, String header, String content) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
@@ -132,17 +143,19 @@ public class HomeReceptionnisteController {
         return dialog.showAndWait();
     }
 
-    /** Alert info */
     private void showNotify(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title); alert.setHeaderText(null); alert.setContentText(content);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 
-    /** Alert erreur */
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title); alert.setHeaderText(null); alert.setContentText(content);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 }

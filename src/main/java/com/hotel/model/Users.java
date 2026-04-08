@@ -11,13 +11,14 @@ public class Users {
     private String email;
     private String nationalite;
     private UsersRole role;
+    private String hotel_id; // 🔥 AJOUTÉ : Pour faire le lien avec la table hotel
 
-    // Constructeur vide (Indispensable pour l'instanciation simple dans le Main)
+    // Constructeur vide
     public Users() {}
 
-    // Constructeur Complet
+    // Constructeur Complet (Mis à jour avec hotelId)
     public Users(String id, String login, String motDePasse, String nom, String prenom,
-                 String telephone, String adresse, String email, String nationalite, UsersRole role) {
+                 String telephone, String adresse, String email, String nationalite, UsersRole role, String hotel_id) {
         this.id = id;
         this.login = login;
         this.motDePasse = motDePasse;
@@ -28,12 +29,13 @@ public class Users {
         this.email = email;
         this.nationalite = nationalite;
         this.role = role;
+        this.hotel_id = hotel_id;
     }
 
     // --- GETTERS ---
     public String getId() { return id; }
     public String getLogin() { return login; }
-    public String getMotDePasse() { return motDePasse; } // Corrigé pour correspondre au champ
+    public String getMotDePasse() { return motDePasse; }
     public String getNom() { return nom; }
     public String getPrenom() { return prenom; }
     public String getTelephone() { return telephone; }
@@ -41,17 +43,13 @@ public class Users {
     public String getEmail() { return email; }
     public String getNationalite() { return nationalite; }
     public UsersRole getRole() { return role; }
+    public String getHotel_id() { return hotel_id; } // 🔥 AJOUTÉ
 
     // --- SETTERS ---
     public void setId(String id) { this.id = id; }
     public void setLogin(String login) { this.login = login; }
-
-    // On garde setMotDePasse pour être en phase avec ton USERDAO et ton Main
     public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
-
-    // Optionnel : on garde aussi setPassword au cas où tu l'utilises ailleurs
     public void setPassword(String password) { this.motDePasse = password; }
-
     public void setNom(String nom) { this.nom = nom; }
     public void setPrenom(String prenom) { this.prenom = prenom; }
     public void setEmail(String email) { this.email = email; }
@@ -59,4 +57,5 @@ public class Users {
     public void setAdresse(String adresse) { this.adresse = adresse; }
     public void setNationalite(String nationalite) { this.nationalite = nationalite; }
     public void setRole(UsersRole role) { this.role = role; }
+    public void setHotel_id(String hotel_id) { this.hotel_id = hotel_id; } // 🔥 AJOUTÉ
 }

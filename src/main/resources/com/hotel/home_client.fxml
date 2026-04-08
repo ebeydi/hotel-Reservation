@@ -1,101 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
 
 <BorderPane prefHeight="850.0" prefWidth="1300.0" style="-fx-background-color: #f1f5f9;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hotel.controller.HomeClientController">
+    
     <top>
-        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" style="-fx-background-color: #0f172a;">
-            <padding><Insets left="20.0" /></padding>
-            <Button onAction="#toggleMenu" style="-fx-background-color: transparent; -fx-font-size: 26; -fx-cursor: hand;" text="☰" textFill="WHITE" />
-            <Label style="-fx-font-weight: bold; -fx-font-size: 20;" text="LA PETITE COTE" textFill="WHITE" />
+        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="20.0" style="-fx-background-color: #0f172a; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);">
+            <padding><Insets left="25.0" /></padding>
+            <Button onAction="#toggleMenu" style="-fx-background-color: transparent; -fx-font-size: 28; -fx-cursor: hand; -fx-text-fill: white;" text="☰" />
+            <Label style="-fx-font-weight: bold; -fx-font-size: 22; -fx-letter-spacing: 2;" text="LA PETITE CÔTE" textFill="WHITE" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblHeaderUser" style="-fx-text-fill: #94a3b8; -fx-padding: 0 25 0 0;" />
         </HBox>
     </top>
 
     <center>
         <StackPane alignment="TOP_LEFT">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
-                <VBox spacing="30.0">
-                    <padding><Insets bottom="40.0" left="40.0" right="40.0" top="40.0" /></padding>
+            <ScrollPane fx:id="mainScrollPane" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                <VBox spacing="35.0">
+                    <padding><Insets bottom="50.0" left="50.0" right="50.0" top="40.0" /></padding>
 
-                    <VBox alignment="CENTER" prefHeight="150.0" spacing="10" style="-fx-background-color: #1e293b; -fx-background-radius: 25;">
-
-                        <Label fx:id="lblCustomerName"
-                               style="-fx-font-size: 32; -fx-font-weight: bold;"
-                               text="BIENVENUE" /> <Label fx:id="lblSlogan"
-                                                          style="-fx-font-size: 16;"
-                                                          text="Tomber amoureux de la Petite Côte" />
-
+                    <VBox alignment="CENTER" prefHeight="180.0" spacing="12" style="-fx-background-color: linear-gradient(to right, #1e293b, #334155); -fx-background-radius: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+                        <Label fx:id="lblCustomerName" style="-fx-font-size: 36; -fx-font-weight: bold;" text="BIENVENUE" textFill="WHITE" />
+                        <Label style="-fx-font-size: 18; -fx-italic: true;" text="Tomber amoureux de la Petite Côte" textFill="#cbd5e1" />
                     </VBox>
 
                     <VBox fx:id="viewLocalities" spacing="30.0">
                         <Label style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #0f172a;" text="🌍 NOS DESTINATIONS" />
                         <FlowPane alignment="CENTER" hgap="30.0" vgap="30.0">
+                            
                             <StackPane onMouseClicked="#clickSaly" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/saly.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true">
+                                    <Image url="@images/saly.jpg" />
+                                </ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="SALY" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="SALY" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickSomone" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/somone.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/somone.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="LA SOMONE" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="LA SOMONE" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickNgaparou" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/ngaparou.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/ngaparou.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="NGAPAROU" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="NGAPAROU" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickPalmarin" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/palmarin.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/palmarin.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="PALMARIN" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="PALMARIN" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickPopenguine" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/popenguine.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/popenguine.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="POPENGUINE" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="POPENGUINE" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickToubab" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/dialao.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/dialao.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="TOUBAB DIALAO" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="TOUBAB DIALAW" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickNianing" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/nianing.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/nianing.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="NIANING" textFill="WHITE" />
-                            </StackPane>
-
-                            <StackPane onMouseClicked="#clickMbodjene" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/mbodjene.jpg" /></ImageView>
-                                <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="MBODJÈNE" textFill="WHITE" />
-                            </StackPane>
-
-                            <StackPane onMouseClicked="#clickWarang" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/warang.jpg" /></ImageView>
-                                <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="WARANG" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="NIANING" textFill="WHITE" />
                             </StackPane>
 
                             <StackPane onMouseClicked="#clickJoal" style="-fx-cursor: hand;">
-                                <ImageView fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"><Image url="@images/joal.jpg" /></ImageView>
+                                <ImageView fitHeight="200.0" fitWidth="320.0" pickOnBounds="true"><Image url="@images/joal.jpg" /></ImageView>
                                 <Pane style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 15;" />
-                                <Label style="-fx-font-size: 20; -fx-font-weight: bold;" text="JOAL" textFill="WHITE" />
+                                <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="JOAL" textFill="WHITE" />
                             </StackPane>
                         </FlowPane>
                     </VBox>
 
                     <VBox fx:id="viewHotels" managed="false" spacing="25.0" visible="false">
-                        <Button onAction="#showLocalities" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" text="← RETOUR AUX DESTINATIONS" />
+                        <Button onAction="#showLocalities" style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 10 20; -fx-background-radius: 10;" text="← RETOUR AUX DESTINATIONS" />
                         <VBox fx:id="containerHotels" spacing="30.0" />
                     </VBox>
 
@@ -106,15 +98,19 @@
                 </VBox>
             </ScrollPane>
 
-            <VBox fx:id="sideMenu" maxWidth="300.0" prefWidth="300.0" style="-fx-background-color: #020617;" translateX="-300.0">
-                <padding><Insets top="40" /></padding>
-                <Label style="-fx-font-size: 26; -fx-font-weight: bold; -fx-padding: 20;" text="NAVIGATION" textFill="#f1c40f" />
-                <Button maxWidth="Infinity" onAction="#showLocalities" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 20 40; -fx-font-size: 16; -fx-cursor: hand;" text="🏠 ACCUEIL" />
-                <Button maxWidth="Infinity" onAction="#showReservations" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 20 40; -fx-font-size: 16; -fx-cursor: hand;" text="📅 MES RÉSERVATIONS" />
-                <Button maxWidth="Infinity" onAction="#handleLogout" style="-fx-background-color: transparent; -fx-text-fill: #ef4444; -fx-alignment: CENTER_LEFT; -fx-padding: 20 40; -fx-font-size: 16; -fx-cursor: hand; -fx-font-weight: bold;" text="🚪 DÉCONNEXION" />
-                <Region VBox.vgrow="ALWAYS" />
-                <Label style="-fx-padding: 20; -fx-text-fill: #475569;" text="Version 2.0 - Premium" />
-            </VBox>
+          <VBox fx:id="sideMenu" maxWidth="300.0" prefWidth="300.0" spacing="10.0" style="-fx-background-color: #020617; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 5, 0);" translateX="-300.0">
+    <padding><Insets top="40" /></padding>
+    
+    <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-padding: 20; -fx-border-color: transparent transparent #1e293b transparent; -fx-border-width: 1;" text="MENU" textFill="#f1c40f" />
+    
+    <Button maxWidth="Infinity" onAction="#showLocalities" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 20 40; -fx-font-size: 16; -fx-cursor: hand;" text="🏠   ACCUEIL" />
+    
+    <Button maxWidth="Infinity" onAction="#showReservations" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-padding: 20 40; -fx-font-size: 16; -fx-cursor: hand;" text="📅   MES RÉSERVATIONS" />
+    
+    <Button maxWidth="Infinity" onAction="#handleLogout" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-alignment: CENTER; -fx-padding: 15; -fx-font-size: 16; -fx-cursor: hand; -fx-font-weight: bold;" text="DÉCONNEXION">
+        <VBox.margin><Insets top="40" left="20" right="20" /></VBox.margin>
+    </Button>
+</VBox>
         </StackPane>
     </center>
 </BorderPane>

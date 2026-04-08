@@ -10,16 +10,18 @@ public class Reservation {
     private int nbPersonne;
     private float montantTotal;
     private StatutReservation statut;
-    private Client client;
+    
+    // CHANGEMENT : On utilise la classe parente Users pour éviter les erreurs de Cast
+    private Users client; 
     private Chambre chambre;
 
     // Constructeur vide
     public Reservation() {}
 
-    // Constructeur complet (utile pour le DAO)
+    // Constructeur complet mis à jour
     public Reservation(String id, String numReservation, Date dateArrive, Date dateDepart, 
                        int nbPersonne, float montantTotal, StatutReservation statut, 
-                       Client client, Chambre chambre) {
+                       Users client, Chambre chambre) {
         this.id = id;
         this.numReservation = numReservation;
         this.dateArrive = dateArrive;
@@ -31,7 +33,7 @@ public class Reservation {
         this.chambre = chambre;
     }
 
-    // --- GETTERS ET SETTERS (Les vrais !) ---
+    // --- GETTERS ET SETTERS ---
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -54,8 +56,9 @@ public class Reservation {
     public StatutReservation getStatut() { return statut; }
     public void setStatut(StatutReservation statut) { this.statut = statut; }
 
-    public Client getClient() { return client; }
-    public void setClient(Client client) { this.client = client; }
+    // Mis à jour pour accepter Users
+    public Users getClient() { return client; }
+    public void setClient(Users client) { this.client = client; }
 
     public Chambre getChambre() { return chambre; }
     public void setChambre(Chambre chambre) { this.chambre = chambre; }
